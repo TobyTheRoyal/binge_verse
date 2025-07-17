@@ -62,7 +62,7 @@ describe('MovieDetailComponent', () => {
     comp.movie = { tmdbId: '1' } as any;
     comp.isInWL = false;
     comp.toggleWatchlist();
-    expect(wl.addToWatchlist).toHaveBeenCalledWith('1');
+    expect(wl.addToWatchlist).toHaveBeenCalledWith('1', 'movie');
   });
 
   it('should submit rating', () => {

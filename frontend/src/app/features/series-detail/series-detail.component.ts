@@ -69,7 +69,7 @@ export class SeriesDetailComponent implements OnInit {
       const id = this.series.tmdbId;
       const op = this.isInWL
         ? this.watchlist.removeFromWatchlist(id)
-        : this.watchlist.addToWatchlist(id);
+        : this.watchlist.addToWatchlist(id, 'tv');
       op.subscribe({
         next: res => {
           if (res !== null && res !== undefined) {

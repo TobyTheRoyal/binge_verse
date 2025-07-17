@@ -31,7 +31,7 @@ export class WatchlistService {
     );
   }
 
-  addToWatchlist(contentId: string): Observable<any> {
+  addToWatchlist(contentId: string, type: 'movie' | 'tv'): Observable<any> {
     const token = this.authService.getToken();
     if (!token) {
       return of(null);
@@ -40,13 +40,13 @@ export class WatchlistService {
       Authorization: `Bearer ${token}`,
     });
     return this.http
-      .post(`${this.apiUrl}/add`, { tmdbId: contentId }, { headers })
+      .post(`${this.apiUrl}/add`, { tmdbId: contentId, type }, { headers })
       .pipe(
         tap(() => {
           const exists = this.watchlist.some(c => c.tmdbId === contentId);
           if (!exists) {
-            this.watchlist.push({ tmdbId: contentId } as Content);
-          }
+             this.watchlist.push({ tmdbId: contentId, type } as Content);
+            }
         }),
         catchError(this.handleError<any>('addToWatchlist'))
       );

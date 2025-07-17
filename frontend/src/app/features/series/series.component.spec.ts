@@ -68,7 +68,7 @@ describe('SeriesComponent', () => {
     const wl = TestBed.inject(WatchlistService) as any;
     wl.isInWatchlist = jest.fn().mockReturnValue(false);
     comp.toggleWatchlist('1');
-    expect(wl.addToWatchlist).toHaveBeenCalledWith('1');
+    expect(wl.addToWatchlist).toHaveBeenCalledWith('1', 'tv');
 
     wl.isInWatchlist.mockReturnValue(true);
     comp.toggleWatchlist('1');

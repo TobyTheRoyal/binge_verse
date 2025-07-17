@@ -70,7 +70,7 @@ export class MovieDetailComponent implements OnInit {
       const id = this.movie.tmdbId;
       const op = this.isInWL
         ? this.watchlist.removeFromWatchlist(id)
-        : this.watchlist.addToWatchlist(id);
+        : this.watchlist.addToWatchlist(id, 'movie');
       op.subscribe({
         next: res => {
           if (res !== null && res !== undefined) {

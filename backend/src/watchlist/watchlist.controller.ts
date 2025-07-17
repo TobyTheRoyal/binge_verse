@@ -8,12 +8,19 @@ export class WatchlistController {
 
   @UseGuards(JwtAuthGuard)
   @Post('add')
-  async addToWatchlist(@Request() req, @Body() body: { tmdbId: string }) {
+  async addToWatchlist(
+    @Request() req,
+    @Body() body: { tmdbId: string; type?: 'movie' | 'tv' },
+  ) {
     if (!body.tmdbId) {
       throw new BadRequestException('tmdbId is required');
     }
     try {
-      return await this.watchlistService.addToWatchlist(req.user, body.tmdbId);
+      return await this.watchlistService.addToWatchlist(
+        req.user,
+        body.tmdbId,
+        body.type,
+      );
     } catch (error) {
       throw new BadRequestException(`Failed to add to watchlist: ${error.message}`);
     }

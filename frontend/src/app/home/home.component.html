@@ -24,7 +24,7 @@
             >
               <button
                 class="add-btn"
-                (click)="toggleWatchlist(item.tmdbId); $event.stopPropagation()"
+                (click)="toggleWatchlist(item.tmdbId, item.type); $event.stopPropagation()"
                 
               >
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">

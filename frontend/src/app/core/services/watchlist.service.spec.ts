@@ -27,13 +27,13 @@ describe('WatchlistService', () => {
   });
 
   it('should add to watchlist', () => {
-    service.addToWatchlist('1').subscribe();
+    service.addToWatchlist('1', 'movie').subscribe();
     const req = http.expectOne(`${environment.apiUrl}/watchlist/add`);
     expect(req.request.method).toBe('POST');
     req.flush({});
   });
   it('should remove from watchlist', () => {
-    service.addToWatchlist('2').subscribe();
+    service.addToWatchlist('2', 'movie').subscribe();
     http.expectOne(`${environment.apiUrl}/watchlist/add`).flush({});
     service.removeFromWatchlist('2').subscribe();
     const req = http.expectOne(`${environment.apiUrl}/watchlist/user/2`);
@@ -43,7 +43,7 @@ describe('WatchlistService', () => {
   });
 
   it('should set rating', () => {
-    service.addToWatchlist('3').subscribe();
+    service.addToWatchlist('3', 'movie').subscribe();
     http.expectOne(`${environment.apiUrl}/watchlist/add`).flush({});
     service.setRating('3', 4).subscribe();
     const req = http.expectOne(`${environment.apiUrl}/watchlist/rate`);
@@ -53,7 +53,7 @@ describe('WatchlistService', () => {
   });
 
   it('should check watchlist membership', () => {
-    service.addToWatchlist('5').subscribe();
+    service.addToWatchlist('5', 'movie').subscribe();
     http.expectOne(`${environment.apiUrl}/watchlist/add`).flush({});
     expect(service.isInWatchlist('5')).toBe(true);
   });

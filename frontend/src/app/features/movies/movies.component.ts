@@ -363,7 +363,7 @@ export class MoviesComponent implements OnInit, OnDestroy {
       }
       const call = this.isInWatchlist(contentId)
         ? this.watchlistService.removeFromWatchlist(contentId)
-        : this.watchlistService.addToWatchlist(contentId);
+        : this.watchlistService.addToWatchlist(contentId, 'movie');
 
       call.subscribe({
         next: () => {},

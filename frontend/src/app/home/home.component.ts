@@ -149,7 +149,7 @@ getExternalRating(item: Content, source: 'imdb' | 'rt'): number | null {
     return this.watchlistService.isInWatchlist(contentId);
   }
 
-  toggleWatchlist(contentId: string): void {
+  toggleWatchlist(contentId: string, type: 'movie' | 'tv'): void {
     this.isLoggedIn$.pipe(take(1)).subscribe(loggedIn => {
       if (!loggedIn) {
         this.router.navigate(['/auth/login']);
@@ -157,7 +157,7 @@ getExternalRating(item: Content, source: 'imdb' | 'rt'): number | null {
       }
       const call = this.isInWatchlist(contentId)
         ? this.watchlistService.removeFromWatchlist(contentId)
-        : this.watchlistService.addToWatchlist(contentId);
+        : this.watchlistService.addToWatchlist(contentId, type);
 
       call.subscribe({
         next: () => this.loadCategories(),

@@ -22,11 +22,27 @@ export class WatchlistService {
     private contentService: ContentService,
   ) {}
 
-  async addToWatchlist(user: User, tmdbId: string): Promise<Watchlist> {
+  async addToWatchlist(
+    user: User,
+    tmdbId: string,
+    type?: 'movie' | 'tv',
+  ): Promise<Watchlist> {
     try {
       let content = await this.contentRepository.findOne({ where: { tmdbId } });
       if (!content) {
-        content = await this.contentService.addFromTmdb(tmdbId, 'movie');
+        if (type) {
+          content = await this.contentService.addFromTmdb(tmdbId, type);
+        } else {
+          try {
+            content = await this.contentService.addFromTmdb(tmdbId, 'movie');
+          } catch (err: any) {
+            if (err?.response?.status === 404) {
+              content = await this.contentService.addFromTmdb(tmdbId, 'tv');
+            } else {
+              throw err;
+            }
+          }
+        }
       }
       const watchlistEntry = this.watchlistRepository.create({
         user,

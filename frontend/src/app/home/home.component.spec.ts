@@ -59,11 +59,11 @@ describe('HomeComponent', () => {
   it('should toggle watchlist', () => {
     const wl = TestBed.inject(WatchlistService) as any;
     wl.isInWatchlist = jest.fn().mockReturnValue(false);
-    component.toggleWatchlist('1');
-    expect(wl.addToWatchlist).toHaveBeenCalledWith('1');
+    component.toggleWatchlist('1', 'movie');
+    expect(wl.addToWatchlist).toHaveBeenCalledWith('1', 'movie');
 
     wl.isInWatchlist.mockReturnValue(true);
-    component.toggleWatchlist('1');
+    component.toggleWatchlist('1', 'movie');
     expect(wl.removeFromWatchlist).toHaveBeenCalledWith('1');
   });
 

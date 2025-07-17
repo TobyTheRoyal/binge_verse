@@ -84,7 +84,7 @@ describe('User Auth and Watchlist (e2e)', () => {
     await request(app.getHttpServer())
       .post('/watchlist/add')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ tmdbId: '1' })
+      .send({ tmdbId: '1', type: 'movie' })
       .expect(201);
 
     const res = await request(app.getHttpServer())
