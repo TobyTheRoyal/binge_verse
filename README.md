@@ -52,7 +52,15 @@ OMDB_API_KEY=your-omdb-key
 
 ### Running with Docker Compose
 
-The easiest way to start the entire stack is via Docker Compose. From the `docker` directory run:
+The easiest way to start the entire stack is via Docker Compose. First copy the sample
+environment file and insert your API keys:
+
+```bash
+cp docker/.env.example docker/.env
+# edit docker/.env and set TMDB_API_KEY and OMDB_API_KEY
+```
+
+From the `docker` directory run:
 
 ```bash
 docker-compose up --build

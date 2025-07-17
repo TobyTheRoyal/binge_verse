@@ -39,13 +39,11 @@ describe('ContentService', () => {
 
   it('should get movies page', () => {
     service.getMoviesPage(2).subscribe();
-    const req = http.expectOne(r =>
-      r.url === `${environment.tmdbApiUrl}/discover/movie` &&
-      r.params.get('page') === '2' &&
-      r.params.get('api_key') === environment.tmdbApiKey
+    const req = http.expectOne(
+      r => r.url === `${environment.apiUrl}/content/movies-page` && r.params.get('page') === '2'
     );
     expect(req.request.method).toBe('GET');
-    req.flush({ results: [] });
+    req.flush([]);
   });
 
   it('should search tmdb', () => {

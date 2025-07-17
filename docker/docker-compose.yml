@@ -26,14 +26,16 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USERNAME: streamfinder
       DB_PASSWORD: securepass
       DB_DATABASE: streamfinder
-      TMDB_API_KEY: 1b3d7c196e53b4ebab10bf60054ef369
-      OMDB_API_KEY: 41518ee9
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      OMDB_API_KEY: ${OMDB_API_KEY}
       JWT_SECRET: your_jwt_secret
     networks:
       - app-network

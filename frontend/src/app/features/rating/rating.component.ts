@@ -20,7 +20,7 @@ export class RatingComponent implements OnInit {
   ratingScore: string = '';
   selectedContentTitle: string = ''; // Neues Feld für den Titel
   apiUrl = `${environment.apiUrl}/ratings`;
-  tmdbApiKey = environment.tmdbApiKey;
+
 
   constructor(private authService: AuthService, private http: HttpClient) {}
 
@@ -33,23 +33,9 @@ export class RatingComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     this.http.get<any[]>(this.apiUrl, { headers }).subscribe({
       next: (data) => {
-        this.ratings = data;
-        this.enrichWithTmdbData();
-      },
-      error: (err) => debugError('Failed to load ratings', err),
-    });
-  }
-
-  enrichWithTmdbData() {
-    this.ratings.forEach((rating) => {
-      const tmdbUrl = `https://api.themoviedb.org/3/${rating.content.type}/${rating.content.tmdbId}?api_key=${this.tmdbApiKey}`;
-      this.http.get<any>(tmdbUrl).subscribe({
-        next: (tmdbData) => {
-          rating.title = tmdbData.title || tmdbData.name;
-          rating.poster = `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`;
+          this.ratings = data;
         },
-        error: (err) => debugError('Failed to load TMDb data', err),
-      });
+      error: (err) => debugError('Failed to load ratings', err),
     });
   }
 
