@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, Observable, of, from } from 'rxjs';
-import { map, timeout, catchError, mergeMap } from 'rxjs/operators';
+import { map, timeout, catchError, mergeMap, toArray} from 'rxjs/operators';
 import { CastMember } from '../cast-member/cast-member.entity';
 
 export interface FilterOptions {
@@ -31,6 +31,9 @@ export class ContentService implements OnModuleInit {
   private cacheTopRated: Content[] = [];
   private cacheNewReleases: Content[] = [];
   private genreMap: Map<number, string> = new Map();
+
+  /** Maximum number of parallel HTTP requests when updating the cache */
+  private readonly concurrencyLimit = 5;
 
   constructor(
     @InjectRepository(Content)
@@ -67,25 +70,17 @@ export class ContentService implements OnModuleInit {
       );
 
       cache.length = 0;
-      for (const item of data.results) {
-        const content = await this.mapToEntity(item, 'movie');
-        const details = await firstValueFrom(
-          this.httpService
-            .get(`${this.tmdbBaseUrl}/movie/${item.id}`, { params: { api_key: this.tmdbApiKey } })
-            .pipe(
-              map(r => r.data),
-              timeout(5000),
-              catchError(() => of({ imdb_id: null })),
-            ),
-        );
+      const results = await firstValueFrom(
+        from(data.results).pipe(
+          mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
+          toArray(),
+        ),
+      );
+      for (const c of results) {
+        if (c) {
+          cache.push(c);
+        }
 
-        const omdb = details.imdb_id
-          ? await this.fetchOmdbData(details.imdb_id)
-          : { imdbRating: null, rtRating: null };
-        content.imdbRating = omdb.imdbRating ? parseFloat(omdb.imdbRating) : null;
-        content.rtRating = omdb.rtRating ? parseInt(omdb.rtRating.replace('%', ''), 10) : null;
-        this.logger.log(`Cached ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`);
-        cache.push(content);
       }
     }
   }
@@ -308,6 +303,45 @@ const detailEndpoint = `${this.tmdbBaseUrl}/${mediaType}/${item.id}`;
     }
   }
 
+  /**
+   * Fetches all additional information for a movie entry used on the home page.
+   * Failures are logged and result in an item with null ratings.
+   */
+  private async fetchHomeItem(item: any): Promise<Content | null> {
+    try {
+      const content = await this.mapToEntity(item, 'movie');
+      const details = await firstValueFrom(
+        this.httpService
+          .get(`${this.tmdbBaseUrl}/movie/${item.id}`, {
+            params: { api_key: this.tmdbApiKey },
+          })
+          .pipe(
+            map(r => r.data),
+            timeout(5000),
+            catchError(() => of({ imdb_id: null })),
+          ),
+      );
+
+      const omdb = details.imdb_id
+        ? await this.fetchOmdbData(details.imdb_id)
+        : { imdbRating: null, rtRating: null };
+
+      content.imdbRating = omdb.imdbRating
+        ? parseFloat(omdb.imdbRating)
+        : null;
+      content.rtRating = omdb.rtRating
+        ? parseInt(omdb.rtRating.replace('%', ''), 10)
+        : null;
+      this.logger.log(
+        `Cached ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`,
+      );
+      return content;
+    } catch (error) {
+      this.logger.error(`Failed to fetch home item for ${item.id}: ${error}`);
+      return null;
+    }
+  }
+  
   searchTmdb(query: string): Observable<Content[]> {
     if (!query.trim()) {
       return new Observable<Content[]>(obs => {
