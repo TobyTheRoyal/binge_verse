@@ -102,61 +102,97 @@ export class ContentService implements OnModuleInit {
     return Promise.resolve(this.cacheNewReleases);
   }
 
-  async getMoviesPageWithRt(page: number, filters?: FilterOptions): Promise<Content[]> {
+  private async getPageWithRatings(
+    mediaType: 'movie' | 'tv',
+    page: number,
+    filters?: FilterOptions,
+  ): Promise<Content[]> {
     const params: any = { api_key: this.tmdbApiKey, page };
     if (filters) {
       if (filters.genre) {
         params.with_genres = await this.getGenreId(filters.genre);
       }
-      params['primary_release_date.gte'] = `${filters.releaseYearMin}-01-01`;
-      params['primary_release_date.lte'] = `${filters.releaseYearMax}-12-31`;
-      
+      if (mediaType === 'movie') {
+        params['primary_release_date.gte'] = `${filters.releaseYearMin}-01-01`;
+        params['primary_release_date.lte'] = `${filters.releaseYearMax}-12-31`;
+      } else {
+        params['first_air_date.gte'] = `${filters.releaseYearMin}-01-01`;
+        params['first_air_date.lte'] = `${filters.releaseYearMax}-12-31`;
+      } 
     }
-
+    const discoverEndpoint =
+      mediaType === 'movie' ? 'discover/movie' : 'discover/tv';
     const { results } = await firstValueFrom(
       this.httpService
-        .get(`${this.tmdbBaseUrl}/discover/movie`, { params })
-        .pipe(
-          map(r => r.data),
-          catchError(() => of({ results: [] })),
-        ),
+        .get(`${this.tmdbBaseUrl}/${discoverEndpoint}`, { params })
+        .pipe(map(r => r.data), catchError(() => of({ results: [] }))),
     );
 
     return Promise.all(
       results.map(async item => {
-        const content = await this.mapToEntity(item, 'movie');
+        const content = await this.mapToEntity(item, mediaType);
+const detailEndpoint = `${this.tmdbBaseUrl}/${mediaType}/${item.id}`;
+        const detailParams: any = { api_key: this.tmdbApiKey };
+        if (mediaType === 'tv') {
+          detailParams.append_to_response = 'external_ids';
+        }
+        
         const details = await firstValueFrom(
           this.httpService
-            .get(`${this.tmdbBaseUrl}/movie/${item.id}`, { params: { api_key: this.tmdbApiKey } })
+            .get(detailEndpoint, { params: detailParams })
             .pipe(
               map(r => r.data),
-              catchError(() => of({ imdb_id: null })),
+              catchError(() =>
+                of(
+                  mediaType === 'movie'
+                    ? { imdb_id: null }
+                    : { external_ids: { imdb_id: null }, imdb_id: null },
+                ),
+              ),
             ),
         );
 
-        const omdb = details.imdb_id
-          ? await this.fetchOmdbData(details.imdb_id)
-          : { imdbRating: null, rtRating: null };
-        content.imdbRating = omdb.imdbRating ? parseFloat(omdb.imdbRating) : null;
-        content.rtRating = omdb.rtRating ? parseInt(omdb.rtRating.replace('%', ''), 10) : null;
-        this.logger.log(`Fetched ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`);
+        const imdbId =
+          mediaType === 'movie'
+            ? details.imdb_id
+            : details.imdb_id || details.external_ids?.imdb_id;
 
-        const providers = await this.fetchWatchProviders(item.id, 'movie');
+        const omdb = imdbId
+          ? await this.fetchOmdbData(imdbId)
+          : { imdbRating: null, rtRating: null };
+        content.imdbRating = omdb.imdbRating
+          ? parseFloat(omdb.imdbRating)
+          : null;
+        content.rtRating = omdb.rtRating
+          ? parseInt(omdb.rtRating.replace('%', ''), 10)
+          : null;
+        this.logger.log(
+          `Fetched ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`,
+        );
+
+        const providers = await this.fetchWatchProviders(item.id, mediaType);
 
         if (filters?.provider && !providers.includes(filters.provider)) {
           return null;
         }
 
-        // Exclude if rtRating is null and rtRatingMin is set
         if (filters && filters.rtRatingMin > 0 && content.rtRating === null) {
           return null;
         }
-        // Exclude if rtRating is below rtRatingMin
-        if (filters && filters.rtRatingMin > 0 && content.rtRating !== null && content.rtRating < filters.rtRatingMin) {
+        if (
+          filters &&
+          filters.rtRatingMin > 0 &&
+          content.rtRating !== null &&
+          content.rtRating < filters.rtRatingMin
+        ) {
           return null;
         }
-        // Exclude if imdbRating is below imdbRatingMin
-        if (filters && filters.imdbRatingMin > 0 && content.imdbRating !== null && content.imdbRating < filters.imdbRatingMin) {
+        if (
+          filters &&
+          filters.imdbRatingMin > 0 &&
+          content.imdbRating !== null &&
+          content.imdbRating < filters.imdbRatingMin
+        ) {
           return null;
         }
 
@@ -165,69 +201,12 @@ export class ContentService implements OnModuleInit {
     ).then(results => results.filter((item): item is Content => item !== null));
   }
 
+  async getMoviesPageWithRt(page: number, filters?: FilterOptions): Promise<Content[]> {
+    return this.getPageWithRatings('movie', page, filters);
+  }
+
   async getSeriesPageWithRt(page: number, filters?: FilterOptions): Promise<Content[]> {
-    const params: any = { api_key: this.tmdbApiKey, page };
-    if (filters) {
-      if (filters.genre) {
-        params.with_genres = await this.getGenreId(filters.genre);
-      }
-      params['first_air_date.gte'] = `${filters.releaseYearMin}-01-01`;
-      params['first_air_date.lte'] = `${filters.releaseYearMax}-12-31`;
-      
-    }
-
-    const { results } = await firstValueFrom(
-      this.httpService
-        .get(`${this.tmdbBaseUrl}/discover/tv`, { params })
-        .pipe(
-          map(r => r.data),
-          catchError(() => of({ results: [] })),
-        ),
-    );
-
-    return Promise.all(
-      results.map(async item => {
-        const content = await this.mapToEntity(item, 'tv');
-        const details = await firstValueFrom(
-          this.httpService
-            .get(`${this.tmdbBaseUrl}/tv/${item.id}`, { params: { api_key: this.tmdbApiKey, append_to_response: 'external_ids' } })
-            .pipe(
-              map(r => r.data),
-              catchError(() => of({ external_ids: { imdb_id: null } })),
-            ),
-        );
-
-        const imdbId = details.imdb_id || details.external_ids?.imdb_id;
-
-        const omdb = imdbId
-          ? await this.fetchOmdbData(imdbId)
-          : { imdbRating: null, rtRating: null };
-        content.imdbRating = omdb.imdbRating ? parseFloat(omdb.imdbRating) : null;
-        content.rtRating = omdb.rtRating ? parseInt(omdb.rtRating.replace('%', ''), 10) : null;
-        this.logger.log(`Fetched ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`);
-
-        const providers = await this.fetchWatchProviders(item.id, 'tv');
-
-        if (filters?.provider && !providers.includes(filters.provider)) {
-          return null;
-        }
-
-        // Exclude if rtRating is null and rtRatingMin is set
-        if (filters && filters.rtRatingMin > 0 && content.rtRating === null) {
-          return null;
-        }
-        // Exclude if rtRating is below rtRatingMin
-        if (filters && filters.rtRatingMin > 0 && content.rtRating !== null && content.rtRating < filters.rtRatingMin) {
-          return null;
-        }
-        // Exclude if imdbRating is below imdbRatingMin
-        if (filters && filters.imdbRatingMin > 0 && content.imdbRating !== null && content.imdbRating < filters.imdbRatingMin) {
-          return null;
-        }
-
-        return content;
-      }),
-    ).then(results => results.filter((item): item is Content => item !== null));
+    return this.getPageWithRatings('tv', page, filters);
   }
 
   async getGenres(): Promise<string[]> {
