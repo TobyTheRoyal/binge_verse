@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: streamfinder
+      POSTGRES_PASSWORD: securepass
+      POSTGRES_DB: streamfinder
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streamfinder"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ../backend # Korrigierter Pfad relativ zu /Users/tobyparker/Desktop/BingeVerse/docker/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: streamfinder
+      DB_PASSWORD: securepass
+      DB_DATABASE: streamfinder
+      TMDB_API_KEY: 1b3d7c196e53b4ebab10bf60054ef369
+      OMDB_API_KEY: 41518ee9
+      JWT_SECRET: your_jwt_secret
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ../frontend # Korrigierter Pfad
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge

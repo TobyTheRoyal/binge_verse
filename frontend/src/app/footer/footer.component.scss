@@ -1,0 +1,61 @@
+@use 'variables';
+
+.footer {
+  background: variables.$primary-color;
+  padding: variables.$spacing-xl;
+  color: variables.$secondary-text-color;
+  font-family: variables.$font-family;
+  box-shadow: variables.$shadow-sm;
+  border-top: 1px solid lighten(variables.$primary-color, 10%);
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: variables.$spacing-lg;
+  }
+
+  .footer-section {
+    h3 {
+      color: variables.$accent-color;
+      font-size: variables.$font-size-subheading;
+      font-weight: 600;
+      margin-bottom: variables.$spacing-md;
+    }
+
+    p {
+      font-size: variables.$font-size-body;
+      line-height: 1.5;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin-bottom: variables.$spacing-sm;
+
+        a {
+          color: variables.$secondary-text-color;
+          font-size: variables.$font-size-body;
+          text-decoration: none;
+          transition: variables.$transition-fast;
+
+          &:hover {
+            color: variables.$accent-color;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: variables.$spacing-md;
+
+    .footer-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<div class="rating-container">
+    <h2>My Ratings</h2>
+    <div class="rating-list">
+      <div class="rating-item" *ngFor="let rating of ratings">
+        <img [src]="rating.poster" alt="{{ rating.title }}" class="poster" *ngIf="rating.poster" />
+        <div class="rating-details">
+          <p>{{ rating.title || 'TMDb ID: ' + rating.content.tmdbId }} ({{ rating.content.type }})</p>
+          <p>Score: {{ rating.score }}</p>
+          <p>Rated At: {{ rating.ratedAt | date }}</p>
+          <button class="rating-btn" (click)="openRatingModal(rating.content.id)">⭐ Update Rating</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="rating-overlay" *ngIf="selectedContentId"></div>
+    <div class="rating-input-container" *ngIf="selectedContentId">
+      <div class="rating-card">
+        <button class="close-btn" (click)="closeRatingModal()">✕</button>
+        <h3>Rate {{ selectedContentTitle }}</h3>
+        <input
+          type="text"
+          [(ngModel)]="ratingScore"
+          placeholder="0.0 – 10.0"
+          class="rating-input-field"
+          (keydown.enter)="submitRating()"
+        />
+        <button class="submit-rating-btn" (click)="submitRating()">Submit</button>
+    </div>
+  </div>

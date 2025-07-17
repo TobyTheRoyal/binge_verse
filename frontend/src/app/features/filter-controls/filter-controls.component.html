@@ -1,0 +1,102 @@
+<div class="filter-panel-inner">
+  <div class="genre-column">
+    <div class="filter-group">
+      <label>Genre</label>
+      <div class="genre-buttons">
+        <button
+          *ngFor="let g of genres"
+          (click)="toggleGenre(g); triggerRipple($event)"
+          [class.active]="genresSelected.includes(g)"
+          class="genre-button"
+        >
+          <span class="ripple"></span>
+          {{ g }}
+        </button>
+        <button
+          (click)="clearGenres(); triggerRipple($event)"
+          [class.active]="genresSelected.length === 0"
+          class="genre-button"
+        >
+          <span class="ripple"></span>
+          All Genres
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-column">
+    <div class="filter-group">
+      <label>Release Year: {{ releaseYearMin }} - {{ releaseYearMax }}</label>
+      <ngx-slider
+        [(value)]="releaseYearMin"
+        [(highValue)]="releaseYearMax"
+        [options]="sliderOptions"
+        (userChangeEnd)="emitChange()"
+      ></ngx-slider>
+    </div>
+
+    <div class="filter-group">
+      <label>IMDb Rating ≥ {{ imdbRatingMin | number:'1.1-1' }}</label>
+      <input
+        type="range"
+        min="0"
+        max="10"
+        step="0.1"
+        [(ngModel)]="imdbRatingMin"
+        (change)="emitChange()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>RT Rating ≥ {{ rtRatingMin | number:'1.0-0' }}%</label>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        [(ngModel)]="rtRatingMin"
+        (change)="emitChange()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>My Rating ≥ {{ userRatingMin | number:'1.1-1' }}</label>
+      <input
+        type="range"
+        min="0"
+        max="10"
+        step="0.1"
+        [(ngModel)]="userRatingMin"
+        (change)="emitChange()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Provider</label>
+      <div class="provider-buttons">
+        <button
+          *ngFor="let p of providers"
+          (click)="toggleProvider(p); triggerRipple($event)"
+          [class.active]="providersSelected.includes(p)"
+          class="provider-button"
+        >
+          <span class="ripple"></span>
+          <img [src]="getProviderLogoPath(p)" [alt]="p" class="provider-logo" />
+        </button>
+        <button
+          (click)="clearProviders(); triggerRipple($event)"
+          [class.active]="providersSelected.length === 0"
+          class="provider-button"
+        >
+          <span class="ripple"></span>
+          All
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button class="reset-btn" (click)="resetFilters(); triggerRipple($event)">
+    <span class="ripple"></span>
+    Reset
+  </button>
+</div>

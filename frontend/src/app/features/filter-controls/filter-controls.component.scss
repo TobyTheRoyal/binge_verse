@@ -1,0 +1,292 @@
+@use 'variables';
+
+.filter-panel-inner {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  align-items: start;
+  gap: variables.$spacing-md;
+  padding: variables.$spacing-lg;
+  background: linear-gradient(135deg, variables.$secondary-color, darken(variables.$secondary-color, 10%));
+  border-radius: variables.$border-radius-md;
+  box-shadow: variables.$shadow-md;
+  max-width: 1200px;
+  margin: variables.$spacing-lg auto;
+  font-family: variables.$font-family;
+  color: variables.$text-color;
+}
+
+.genre-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.slider-column {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$spacing-md;
+  max-width: 360px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$spacing-sm;
+
+  label {
+    font-size: variables.$font-size-small;
+    font-weight: 600;
+    color: variables.$text-color;
+    text-transform: uppercase;
+  }
+
+  .genre-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: variables.$spacing-sm;
+  }
+
+  .provider-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: variables.$spacing-sm;
+  }
+
+  .genre-button {
+    padding: variables.$spacing-sm variables.$spacing-md;
+    background: variables.$primary-color;
+    border: 2px solid variables.$accent-color;
+    border-radius: variables.$border-radius-sm;
+    color: variables.$text-color;
+    font-size: variables.$font-size-small;
+    font-family: variables.$font-family;
+    cursor: pointer;
+    transition: variables.$transition-fast;
+    position: relative;
+    overflow: hidden;
+
+    &.active {
+      background: linear-gradient(135deg, variables.$accent-color, darken(variables.$accent-color, 15%));
+      border-color: variables.$accent-color;
+      color: variables.$text-color;
+    }
+
+    &:hover {
+      background: variables.$hover-color;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 0, 122, 0.3);
+    }
+
+    .ripple {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: scale(0);
+      pointer-events: none;
+    }
+
+    .ripple.animate {
+      animation: ripple 0.6s linear;
+    }
+  }
+
+  .provider-button {
+    width: 60px;
+    height: 60px;
+    background: variables.$primary-color;
+    border: none;
+    border-radius: variables.$border-radius-sm;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: variables.$transition-fast;
+    position: relative;
+    overflow: hidden;
+
+    .provider-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      border-radius: variables.$border-radius-sm;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, variables.$accent-color, darken(variables.$accent-color, 15%));
+    }
+
+    &:hover {
+      background: variables.$hover-color;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 0, 122, 0.3);
+    }
+
+    .ripple {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: scale(0);
+      pointer-events: none;
+    }
+
+    .ripple.animate {
+      animation: ripple 0.6s linear;
+    }
+  }
+}
+
+.reset-btn {
+  grid-column: 2;
+  justify-self: end;
+  background: linear-gradient(135deg, variables.$accent-color, darken(variables.$accent-color, 15%));
+  border: none;
+  color: variables.$text-color;
+  font-weight: 600;
+  font-size: variables.$font-size-small;
+  padding: variables.$spacing-sm variables.$spacing-md;
+  border-radius: variables.$border-radius-lg;
+  cursor: pointer;
+  transition: variables.$transition-fast;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 0, 122, 0.3);
+  }
+
+  .ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  .ripple.animate {
+    animation: ripple 0.6s linear;
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.ngx-slider {
+  height: 6px;
+  margin: 0;
+  padding: 0;
+
+  .ngx-slider-bar {
+    height: 6px !important;
+    background: variables.$secondary-color !important;
+    border-radius: variables.$border-radius-sm !important;
+  }
+
+  .ngx-slider-selection {
+    background: variables.$accent-color;
+    height: 6px;
+  }
+
+  .ngx-slider-pointer {
+    width: 12px !important;
+    height: 12px !important;
+    background: variables.$accent-color !important;
+    border-radius: 50% !important;
+    border: none !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    transition: box-shadow variables.$transition-fast !important;
+  }
+
+  .ngx-slider-pointer:hover,
+  .ngx-slider-pointer:focus {
+    box-shadow: 0 0 0 4px rgba(255, 0, 122, 0.25);
+    outline: none;
+  }
+
+  .ngx-slider-bubble,
+  .ngx-slider-tick,
+  .ngx-slider-limit {
+    display: none !important;
+  }
+
+  .ngx-slider-pointer::after {
+    display: none !important;
+  }
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: variables.$secondary-color;
+  border-radius: variables.$border-radius-sm;
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: variables.$accent-color;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: box-shadow variables.$transition-fast;
+
+    &:hover {
+      box-shadow: 0 0 0 4px rgba(255, 0, 122, 0.25);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: variables.$accent-color;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: box-shadow variables.$transition-fast;
+
+    &:hover {
+      box-shadow: 0 0 0 4px rgba(255, 0, 122, 0.25);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-panel-inner {
+    grid-template-columns: 1fr;
+    padding: variables.$spacing-md;
+    gap: variables.$spacing-sm;
+  }
+
+  .slider-column {
+    max-width: 100%;
+  }
+
+  .genre-button, .provider-button, .reset-btn {
+    font-size: 0.8rem;
+    padding: variables.$spacing-xs variables.$spacing-sm;
+  }
+
+  .provider-button {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .provider-button {
+    width: 40px;
+    height: 40px;
+  }
+}

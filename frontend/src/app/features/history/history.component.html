@@ -1,0 +1,93 @@
+<div class="history-container">
+  <h2>My History</h2>
+  <div class="filter-actions">
+    <button
+      class="filter-toggle-btn"
+      [ngClass]="{ 'active': showFilters }"
+      (click)="toggleFilters()"
+    >
+      <svg
+        class="filter-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <polygon points="22 3 2 3 10 12.5 10 21 14 21 14 12.5 22 3"></polygon>
+      </svg>
+      Filter
+      <span *ngIf="hasActiveFilters()" class="active-indicator"></span>
+    </button>
+  </div>
+
+  <app-filter-controls
+    *ngIf="showFilters"
+    [genresSelected]="genres"
+    [releaseYearMin]="releaseYearMin"
+    [releaseYearMax]="releaseYearMax"
+    [imdbRatingMin]="imdbRatingMin"
+    [rtRatingMin]="rtRatingMin"
+    [userRatingMin]="userRatingMin"
+    [providersSelected]="providers"
+    [currentYear]="currentYear"
+    (filtersChange)="updateFilters($event)"
+    (reset)="resetFilters()"
+  ></app-filter-controls>
+  <div class="content-list">
+    <div
+      class="content-card"
+      *ngFor="let entry of filteredHistory"
+      (mouseleave)="stopRating()"
+      (click)="onCardClick(entry.content.tmdbId)"
+    >
+      <div
+        class="card-image"
+        [style.backgroundImage]="'url(' + (entry.content.poster || 'https://placehold.co/200x300') + ')'"
+      >
+        <button class="rating-btn" (click)="startRating(entry.content.tmdbId); $event.stopPropagation()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </button>
+        <div class="rating-overlay" *ngIf="selectedContentId === entry.content.tmdbId && !isRatingSubmitted"></div>
+        <div class="rating-input-container" *ngIf="selectedContentId === entry.content.tmdbId && !isRatingSubmitted">
+          <div class="rating-card">
+            <button class="close-btn" (click)="stopRating()">✕</button>
+            <h3>Rate “{{ entry.content.title }}”</h3>
+            <input
+              type="text"
+              [(ngModel)]="ratingScore"
+              placeholder="0.0 – 10.0"
+              class="rating-input-field"
+              (keydown.enter)="submitRating(entry.content.tmdbId)"
+              
+            />
+            <button class="submit-rating-btn" (click)="submitRating(entry.content.tmdbId)">
+              Submit
+            </button>
+          </div>
+        </div>
+        <div class="own-rating-tag" *ngIf="entry.score != null">
+          <span class="star-icon">★</span>
+          {{ entry.score | number:'1.1-1' }}
+        </div>
+      </div>
+      <p class="card-title">{{ entry.content.title }} ({{ entry.content.releaseYear }})</p>
+      <div class="ratings-container">
+        <div class="imdb-rating">
+          <img src="/assets/images/imdb-logo.png" alt="IMDb" class="rating-icon imdb-rating-icon" />
+          {{ entry.content.imdbRating != null ? (entry.content.imdbRating | number:'1.1-1') : 'N/A' }}
+        </div>
+        <div class="rt-rating">
+          <img src="/assets/images/rt-logo-cf.png" alt="Rotten Tomatoes" class="rating-icon rt-rating-icon" />
+          <ng-container *ngIf="entry.content.rtRating != null; else rtNA">
+            {{ entry.content.rtRating | number:'1.0-0' }}%
+          </ng-container>
+          <ng-template #rtNA>N/A</ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

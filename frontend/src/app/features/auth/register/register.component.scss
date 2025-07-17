@@ -1,0 +1,79 @@
+@use 'variables';
+
+.auth-page {
+    min-height: 100vh;
+    background: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .auth-box {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  .auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: #3a3a3a;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 1rem;
+  
+    &::placeholder {
+      color: #b3b3b3;
+    }
+  }
+  
+  .auth-button {
+    width: 100%;
+    background: variables.$accent-color;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  
+    &:hover {
+      background: #00a899;
+    }
+  
+    &:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+  }
+  .error-message {
+    color: variables.$danger-color;
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .auth-link {
+    color: #b3b3b3;
+    font-size: 0.9rem;
+    margin-top: 15px;
+  
+    a {
+      color: variables.$accent-color;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }

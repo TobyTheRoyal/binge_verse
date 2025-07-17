@@ -1,0 +1,85 @@
+<div class="navbar" [class.scrolled]="isScrolled">
+  <div class="top-bar">
+    <a class="logo-link" routerLink="/">BINGE VERSE</a>
+    
+    <div class="search-container">
+      <input
+        class="search-bar"
+        [formControl]="searchControl"
+        placeholder="Search movies or series..."
+        (focus)="suggestions.length > 0 ? null : clearSuggestions()"
+      />
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <div class="autocomplete-list" *ngIf="suggestions.length > 0">
+        <div
+          class="suggestion-item"
+          *ngFor="let m of suggestions"
+          (click)="selectSuggestion(m)"
+        >
+          <img
+            class="suggestion-poster"
+            [src]="m.poster || 'https://placehold.co/40x60'"
+            alt="{{ m.title }}"
+          />
+          <div class="suggestion-text">
+            <div class="suggestion-title">{{ m.title }}</div>
+            <div class="suggestion-year">{{ m.releaseYear }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="user-options">
+      <ng-container *ngIf="isLoggedIn; else guestOptions">
+        <a class="user-link watchlist" routerLink="/watchlist">
+          <svg class="link-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Watchlist
+        </a>
+        <a class="user-link history" routerLink="/history">
+          <svg class="link-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+          </svg>
+          History
+        </a>
+        <div class="profile-dropdown">
+          <button class="profile-btn" (click)="toggleDropdown()">
+            <svg class="user-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+          <ul class="dropdown-menu" [class.show]="isDropdownOpen">
+            <li>
+              <a routerLink="/profile">
+                <span class="menu-icon">👤</span> Profile
+              </a>
+            </li>
+            <li>
+              <a (click)="logout()">
+                <span class="menu-icon">🚪</span> Sign Out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+      <ng-template #guestOptions>
+        <a class="auth-link guest-link" routerLink="/auth/login">Sign In</a>
+        <a class="auth-link signup-link" routerLink="/auth/register">Sign Up</a>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="category-bar">
+    <ul class="category-links">
+      <li><a routerLink="/for-you" routerLinkActive="active">For You</a></li>
+      <li><a routerLink="/movies" routerLinkActive="active">Movies</a></li>
+      <li><a routerLink="/series" routerLinkActive="active">Series</a></li>
+      <li><a routerLink="/new" routerLinkActive="active">New</a></li>
+    </ul>
+  </div>
+</div>

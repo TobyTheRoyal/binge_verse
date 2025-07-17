@@ -1,0 +1,114 @@
+<div class="movies-container">
+  <h2>Movies</h2>
+  <div class="filter-actions">
+  <button
+      class="filter-toggle-btn"
+      [ngClass]="{ 'active': showFilters }"
+      (click)="toggleFilters()"
+    >
+      <svg
+        class="filter-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <polygon points="22 3 2 3 10 12.5 10 21 14 21 14 12.5 22 3"></polygon>
+      </svg>
+      Filter
+      <span *ngIf="hasActiveFilters()" class="active-indicator"></span>
+    </button>
+</div>
+
+<app-filter-controls
+  *ngIf="showFilters"
+  [genresSelected]="genres"
+  [releaseYearMin]="releaseYearMin"
+  [releaseYearMax]="releaseYearMax"
+  [imdbRatingMin]="imdbRatingMin"
+  [rtRatingMin]="rtRatingMin"
+  [providersSelected]="providers"
+  [currentYear]="currentYear"
+  (filtersChange)="updateFilters($event)"
+  (reset)="resetFilters()"
+></app-filter-controls>
+  <div class="content-list">
+    <div
+      class="content-card"
+      *ngFor="let item of movies; trackBy: trackByMovie"
+      (mouseleave)="stopRating()"
+      (click)="onCardClick(item.tmdbId)"
+    >
+      <div
+        class="card-image"
+        [style.backgroundImage]="'url(' + (item.poster || 'https://placehold.co/220x330') + ')'"
+      >
+        <button
+          class="add-btn"
+          (click)="toggleWatchlist(item.tmdbId); $event.stopPropagation()"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path *ngIf="!isInWatchlist(item.tmdbId)" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            <path *ngIf="isInWatchlist(item.tmdbId)" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="none"/>
+          </svg>
+        </button>
+        <button
+          class="rating-btn"
+          (click)="startRating(item.tmdbId); $event.stopPropagation()"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </button>
+        <div
+          class="rating-overlay"
+          *ngIf="selectedContentId === item.tmdbId && !isRatingSubmitted"
+        ></div>
+        <div
+          class="rating-input-container"
+          *ngIf="selectedContentId === item.tmdbId && !isRatingSubmitted"
+        >
+          <div class="rating-card">
+            <button class="close-btn" (click)="stopRating()">✕</button>
+            <h3>Rate "{{ item.title }}"</h3>
+            <input
+              type="text"
+              [(ngModel)]="ratingScore"
+              placeholder="0.0 – 10.0"
+              class="rating-input-field"
+              (keydown.enter)="submitRating(item.tmdbId)"
+            />
+            <button
+              class="submit-rating-btn"
+              (click)="submitRating(item.tmdbId)"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+        <div class="own-rating-tag" *ngIf="getRating(item.tmdbId) !== null">
+          <span class="star-icon">★</span>
+          {{ getRating(item.tmdbId) | number:'1.1-1' }}
+        </div>
+      </div>
+      <p class="card-title">{{ item.title }} ({{ item.releaseYear }})</p>
+      <div class="ratings-container">
+        <div class="imdb-rating">
+          <img src="/assets/images/imdb-logo.png" alt="IMDb" class="rating-icon imdb-rating-icon" />
+          {{ item.imdbRating != null ? (item.imdbRating | number: '1.1-1') : 'N/A' }}
+        </div>
+        <div class="rt-rating">
+          <img src="/assets/images/rt-logo-cf.png" alt="Rotten Tomatoes" class="rating-icon rt-rating-icon" />
+          <ng-container *ngIf="item.rtRating != null; else rtNA">{{ item.rtRating | number: '1.0-0' }}%</ng-container>
+          <ng-template #rtNA>N/A</ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="isLoading" class="loading-indicator">
+    <div class="spinner"></div>
+    Laden...
+  </div>
+</div>

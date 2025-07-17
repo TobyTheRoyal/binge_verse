@@ -1,0 +1,200 @@
+@use 'variables';
+@use 'content-card';
+
+.home-container {
+  background: variables.$primary-color;
+  padding: variables.$spacing-xl;
+  min-height: 100vh;
+  color: variables.$text-color;
+  font-family: variables.$font-family;
+  display: flex;
+  flex-direction: column;
+  gap: variables.$spacing-xl;
+}
+
+/* ===================== Hero Section ===================== */
+.hero-section {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+  background: url('https://via.placeholder.com/1400x400') center/cover no-repeat;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(26,26,26,0.8));
+  }
+
+  .hero-content {
+    position: relative;
+    padding: 80px 40px;
+    text-align: center;
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 1.25rem;
+      color: #ddd;
+      margin-bottom: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .hero-button {
+      background: variables.$accent-color;
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,196,180,0.4);
+
+      &:hover {
+        background: #00a899;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+/* Category Section */
+.category-section {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: variables.$font-size-heading;
+    font-weight: 700;
+    margin-bottom: variables.$spacing-lg;
+    text-align: left;
+    color: variables.$accent-color;
+    text-shadow: 0 0 10px variables.$shadow-color;
+  }
+
+  .slider-container {
+    position: relative;
+    overflow: hidden;
+    padding: 0 20px;
+
+    &:hover .slider-arrow {
+      opacity: 1;
+    }
+  }
+}
+
+/* Scrollable List */
+.scroll-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+  margin: 0 -20px;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+  }
+}
+
+.content-list {
+  display: flex;
+  gap: 24px;
+  padding: 0 20px;
+}
+
+/* Card sizing overrides for home slider */
+.content-card {
+  flex: 0 0 auto;
+  width: 200px;
+  aspect-ratio: 5 / 9; /* 200 × 360 */
+  height: auto;
+
+  .card-image {
+    aspect-ratio: 20 / 27; /* 200 × 270 */
+    height: auto;
+  }
+}
+/* Arrow Buttons */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.left-arrow  { left: 10px; }
+.right-arrow { right: 10px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content h1    { font-size: 2.5rem; }
+  .hero-content p     { font-size: 1rem; }
+  .content-card { width: 160px; aspect-ratio: 5 / 9; }
+  .slider-arrow { display: none; }
+}
+
+.hero-recommendation {
+  background-size: cover;
+  background-position: center;
+  height: 80vh;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 2rem;
+  color: white;
+  font-family: sans-serif;
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    max-width: 500px;
+
+    .recommendation-reason {
+      font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0 0 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      background-color: #ff3d00;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+}
+

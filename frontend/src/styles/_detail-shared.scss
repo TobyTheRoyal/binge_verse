@@ -1,0 +1,309 @@
+@use 'variables';
+
+@mixin layout($prefix) {
+  .#{$prefix}-detail-container {
+    width: 100%;
+    //max-width: 1200px;
+    margin: 0 auto;
+    padding: variables.$spacing-xl;
+    background: variables.$primary-color;
+    color: variables.$text-color;
+    min-height: 100vh;
+    font-family: variables.$font-family;
+  }
+
+  .#{$prefix}-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: variables.$spacing-md;
+    margin-bottom: variables.$spacing-xl;
+  }
+
+  .#{$prefix}-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: variables.$text-color;
+  }
+
+  .#{$prefix}-year {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: variables.$secondary-text-color;
+    margin-left: variables.$spacing-sm;
+  }
+
+  .#{$prefix}-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: variables.$spacing-xl;
+  }
+
+  .#{$prefix}-poster {
+    width: 100%;
+    border-radius: variables.$border-radius-sm;
+    box-shadow: variables.$shadow-md;
+    object-fit: cover;
+  }
+}
+
+.poster-wrapper {
+  position: relative;
+  flex: 0 0 300px;
+}
+
+.add-btn,
+.rating-btn {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  padding: variables.$spacing-xs;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: variables.$text-color;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: variables.$transition-fast;
+
+  &:hover {
+    background: linear-gradient(135deg, variables.$accent-color, darken(variables.$accent-color, 15%));
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(255, 0, 122, 0.3);
+  }
+}
+
+.add-btn { top: 12px; left: 12px; }
+.rating-btn { top: 56px; left: 12px; }
+
+.rating-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  z-index: 1;
+}
+
+.rating-input-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.rating-card {
+  background: rgba(42, 42, 42, 0.9);
+  padding: variables.$spacing-sm;
+  border-radius: variables.$border-radius-sm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  max-width: 240px;
+  box-shadow: variables.$shadow-md;
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: variables.$text-color;
+    font-size: variables.$font-size-body;
+    cursor: pointer;
+    transition: variables.$transition-fast;
+
+    &:hover {
+      color: variables.$accent-color;
+    }
+  }
+
+  h3 {
+    color: variables.$text-color;
+    font-size: variables.$font-size-body;
+    font-weight: 700;
+    margin-bottom: variables.$spacing-md;
+    text-align: center;
+  }
+
+  .rating-input-field {
+    width: 100px;
+    padding: variables.$spacing-sm;
+    border: 2px solid variables.$accent-color;
+    border-radius: variables.$border-radius-sm;
+    background: transparent;
+    color: variables.$text-color;
+    text-align: center;
+    font-size: variables.$font-size-small;
+    font-family: variables.$font-family;
+    transition: variables.$transition-fast;
+
+    &:focus {
+      border-color: variables.$hover-color;
+      box-shadow: 0 0 8px variables.$shadow-color;
+      outline: none;
+    }
+  }
+
+  .submit-rating-btn {
+    background: linear-gradient(135deg, variables.$accent-color, darken(variables.$accent-color, 15%));
+    color: variables.$text-color;
+    border: none;
+    padding: variables.$spacing-sm variables.$spacing-md;
+    border-radius: variables.$border-radius-lg;
+    font-size: variables.$font-size-small;
+    font-weight: 600;
+    font-family: variables.$font-family;
+    cursor: pointer;
+    margin-top: variables.$spacing-md;
+    transition: variables.$transition-fast;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(255, 0, 122, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+
+  .own-rating-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 0, 122, 0.9);
+    padding: 6px 12px;
+    border-radius: variables.$border-radius-sm;
+    color: variables.$text-color;
+    font-size: variables.$font-size-small;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 0 6px rgba(255, 0, 122, 0.5);
+  }
+}
+
+.details-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: variables.$spacing-lg;
+}
+
+.ratings-wrapper {
+  display: flex;
+  gap: variables.$spacing-md;
+}
+
+.rating-block {
+  display: flex;
+  align-items: center;
+  gap: variables.$spacing-sm;
+  background: linear-gradient(135deg, variables.$secondary-color, darken(variables.$secondary-color, 15%));
+  padding: variables.$spacing-sm variables.$spacing-md;
+  border-radius: variables.$border-radius-md;
+  box-shadow: variables.$shadow-sm;
+}
+
+.rating-icon {
+  width: 24px;
+  height: auto;
+}
+
+.imdb-rating-icon { width: 28px; }
+.rt-rating-icon  { width: 24px; }
+
+.rating-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: variables.$text-color;
+}
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: variables.$spacing-sm;
+}
+
+.providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: variables.$spacing-md;
+  align-items: center;
+}
+
+.provider-logo {
+  width: 60px;
+  height: auto;
+  object-fit: contain;
+}
+
+.genre-pill {
+  background: linear-gradient(135deg, variables.$secondary-color, darken(variables.$secondary-color, 15%));
+  color: variables.$text-color;
+  padding: variables.$spacing-xs variables.$spacing-sm;
+  border-radius: 999px;
+  font-size: variables.$font-size-small;
+  box-shadow: variables.$shadow-sm;
+}
+
+.overview,
+.cast-section {
+  background: linear-gradient(135deg, variables.$secondary-color, darken(variables.$secondary-color, 15%));
+  padding: variables.$spacing-lg;
+  border-radius: variables.$border-radius-md;
+  color: variables.$text-color;
+  box-shadow: variables.$shadow-sm;
+}
+
+.cast-list {
+  display: flex;
+  overflow-x: auto;
+  gap: variables.$spacing-md;
+}
+
+.cast-item {
+  flex: 0 0 120px;
+  text-align: center;
+}
+
+.cast-image-wrapper {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: variables.$border-radius-md;
+}
+
+.cast-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cast-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: variables.$spacing-xs;
+}
+
+.cast-name {
+  margin: 0;
+  font-weight: 600;
+  color: variables.$text-color;
+}
+
+.cast-char {
+  margin: 0;
+  color: variables.$text-color;
+}
+
+@media (max-width: 768px) {
+  .poster-wrapper { flex: 0 0 240px; }
+  .rating-card { width: 90%; max-width: 220px; }
+}

@@ -1,0 +1,32 @@
+<div class="auth-page">
+  <div class="auth-box">
+    <h2>Sign In</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <input
+        class="auth-input"
+        type="email"
+        formControlName="email"
+        placeholder="Email"
+        required
+      />
+      <input
+        class="auth-input"
+        type="password"
+        formControlName="password"
+        placeholder="Password"
+        required
+      />
+      <button
+        class="auth-button"
+        type="submit"
+        [disabled]="!loginForm.valid || !isFormTouched"
+      >
+        Sign In
+      </button>
+    </form>
+    <div class="auth-link">
+      Don't have an account? <a routerLink="/auth/register">Sign up</a>
+    </div>
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </div>
+</div>

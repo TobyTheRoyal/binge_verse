@@ -1,0 +1,64 @@
+@use 'variables';
+@use 'content-card';
+
+.rating-container {
+    padding: 40px 30px;
+    background: #1a1a1a;
+    min-height: 100vh;
+  }
+  
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+  
+  
+  
+  label {
+    color: #ffffff;
+    font-size: 16px;
+  }
+  
+  
+  
+  button {
+    background: variables.$accent-color;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  
+    &:hover {
+      background: #00a899;
+    }
+  }
+  
+  .rating-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .rating-item {
+    background: #2a2a2a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 15px;
+  }
+  
+  .poster {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .rating-details {
+    color: #b3b3b3;
+  }

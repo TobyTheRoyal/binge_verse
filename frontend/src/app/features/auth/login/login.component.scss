@@ -1,0 +1,112 @@
+@use 'variables';
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: variables.$primary-color;
+  padding: variables.$spacing-md;
+}
+
+.auth-box {
+  background: variables.$secondary-color;
+  padding: variables.$spacing-xl;
+  border-radius: variables.$border-radius-md;
+  box-shadow: variables.$shadow-md;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+h2 {
+  color: variables.$text-color;
+  font-size: variables.$font-size-heading;
+  font-weight: 700;
+  font-family: variables.$font-family;
+  margin-bottom: variables.$spacing-lg;
+}
+
+.auth-input {
+  width: 100%;
+  padding: variables.$spacing-sm variables.$spacing-md;
+  margin: variables.$spacing-sm 0;
+  background: variables.$primary-color;
+  border: 1px solid transparent;
+  border-radius: variables.$border-radius-sm;
+  color: variables.$text-color;
+  font-size: variables.$font-size-body;
+  font-family: variables.$font-family;
+  outline: none;
+  transition: variables.$transition-fast;
+
+  &:focus {
+    border-color: variables.$accent-color;
+    box-shadow: 0 0 8px variables.$shadow-color;
+  }
+
+  &::placeholder {
+    color: variables.$secondary-text-color;
+  }
+}
+
+.auth-button {
+  background: linear-gradient(45deg, variables.$accent-color, darken(variables.$accent-color, 10%));
+  color: variables.$text-color;
+  border: none;
+  padding: variables.$spacing-sm variables.$spacing-md;
+  margin-top: variables.$spacing-md;
+  border-radius: variables.$border-radius-lg;
+  font-size: variables.$font-size-body;
+  font-weight: 600;
+  font-family: variables.$font-family;
+  cursor: pointer;
+  transition: variables.$transition-fast;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: variables.$shadow-sm;
+  }
+
+  &[disabled] {
+    background: variables.$secondary-text-color;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.auth-link {
+  color: variables.$secondary-text-color;
+  font-size: variables.$font-size-small;
+  font-family: variables.$font-family;
+  margin-top: variables.$spacing-md;
+  display: block;
+
+  a {
+    color: variables.$accent-color;
+    text-decoration: none;
+    transition: variables.$transition-fast;
+
+    &:hover {
+      color: variables.$hover-color;
+    }
+  }
+}
+
+.error-message {
+  color: variables.$danger-color;
+  font-size: variables.$font-size-small;
+  font-family: variables.$font-family;
+  margin-top: variables.$spacing-sm;
+}
+
+@media (max-width: 768px) {
+  .auth-box {
+    padding: variables.$spacing-md;
+  }
+
+  h2 {
+    font-size: variables.$font-size-subheading;
+  }
+}

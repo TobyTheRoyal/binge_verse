@@ -1,0 +1,115 @@
+<div class="home-container">
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Your personal streaming companion</h1>
+      <p>rate, discover and keep track of what you love</p>
+    </div>
+  </section>
+
+
+  <!-- Category Sections -->
+  <section class="category-section" *ngFor="let category of categories">
+    <h2>{{ category.title }}</h2>
+    <div class="slider-container">
+      <button class="slider-arrow left-arrow" (click)="scrollLeft(category.id)">◄</button>
+      <div class="scroll-container" [id]="category.id">
+        <div class="content-list">
+          <div class="content-card" *ngFor="let item of category.items" (click)="onCardClick(item.tmdbId)" (mouseleave)="stopRating()">
+            <!-- Poster + Add/Rate Buttons -->
+            <div
+              class="card-image"
+              [style.backgroundImage]="'url(' + (item.poster || 'https://placehold.co/200x300') + ')'"
+            >
+              <button
+                class="add-btn"
+                (click)="toggleWatchlist(item.tmdbId); $event.stopPropagation()"
+                
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path *ngIf="!isInWatchlist(item.tmdbId)" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                  <path *ngIf="isInWatchlist(item.tmdbId)" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="none"/>
+                </svg>
+              </button>
+              <button class="rating-btn" (click)="startRating(category.id, item.tmdbId); $event.stopPropagation()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2
+                           9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              </button>
+
+              <!-- Rating Overlay + Text-Eingabe wie in Watchlist -->
+<div
+  class="rating-overlay"
+  *ngIf="selectedCategoryId === category.id && selectedContentId === item.tmdbId && !isRatingSubmitted"
+></div>
+<div
+  class="rating-input-container"
+  *ngIf="selectedCategoryId === category.id && selectedContentId === item.tmdbId && !isRatingSubmitted"
+>
+<div class="rating-card">
+  <button class="close-btn" (click)="stopRating()">✕</button>
+  <h3>Rate “{{ item.title }}”</h3>
+  <input
+    type="text"
+    [(ngModel)]="ratingScore"
+    placeholder="0.0 – 10.0"
+    class="rating-input-field"
+    (keydown.enter)="submitRating(item.tmdbId)"
+  />
+  <button
+    class="submit-rating-btn"
+    (click)="submitRating(item.tmdbId)"
+  >
+    Submit
+  </button>
+</div>
+</div>
+
+<!-- Nach abgeschicktem Rating: Badge oben rechts -->
+<div
+  class="own-rating-tag"
+  *ngIf="getRating(item.tmdbId) !== null"
+>
+  <span class="star-icon">★</span>
+  {{ getRating(item.tmdbId) | number:'1.1-1' }}
+</div>
+            </div>
+
+            <!-- Title -->
+            <p class="card-title">{{ item.title }} ({{ item.releaseYear }})</p>
+
+            <!-- External Ratings -->
+            <div class="ratings-container">
+              <div class="imdb-rating">
+                <img
+                  src="/assets/images/imdb-logo.png"
+                  alt="IMDb"
+                  class="rating-icon imdb-rating-icon"
+                />
+                {{ item.imdbRating != null
+                   ? (item.imdbRating | number:'1.1-1')
+                   : 'N/A' }}
+              </div>
+              <div class="rt-rating">
+                <img
+                  src="/assets/images/rt-logo-cf.png"
+                  alt="Rotten Tomatoes"
+                  class="rating-icon rt-rating-icon"
+                />
+                <ng-container *ngIf="item.rtRating != null; else homeRtNA">
+                  {{ item.rtRating | number:'1.0-0' }}%
+                </ng-container>
+                <ng-template #homeRtNA>N/A</ng-template>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <button class="slider-arrow right-arrow" (click)="scrollRight(category.id)">►</button>
+    </div>
+  </section>
+
+</div>

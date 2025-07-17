@@ -1,0 +1,153 @@
+<ng-container *ngIf="isLoading">
+  <div class="loader">Lade …</div>
+</ng-container>
+
+<ng-container *ngIf="!isLoading && movie; else noMovie">
+  <div class="movie-detail-container">
+
+    <header class="movie-header">
+      <h1 class="movie-title">
+        {{ movie.title }}
+        <span class="movie-year">({{ movie.releaseYear }})</span>
+      </h1>
+    </header>
+
+    <div class="movie-content">
+      <div class="poster-wrapper">
+        <!-- Add-Button oben links -->
+        <button class="add-btn" (click)="toggleWatchlist(); $event.stopPropagation()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path *ngIf="!isInWL" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            <path *ngIf="isInWL" d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="currentColor" stroke="none"/>
+          </svg>
+        </button>
+
+        <!-- Rate-Button direkt darunter -->
+        <button class="rating-btn" (click)="onClickRateButton(); $event.stopPropagation()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2
+                     9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </button>
+
+        <img
+          [src]="movie.poster || 'https://placehold.co/200x300'"
+          [alt]="movie.title"
+          class="movie-poster"
+        />
+
+        <!-- Rating-Overlay -->
+        <div
+          class="rating-overlay"
+          *ngIf="selectedContentId === movie.tmdbId && !isRatingSubmitted"
+          (click)="cancelRating()"
+        ></div>
+
+        <!-- Rating-Card -->
+        <div
+          class="rating-input-container"
+          *ngIf="selectedContentId === movie.tmdbId && !isRatingSubmitted"
+        >
+          <div class="rating-card">
+            <button class="close-btn" (click)="cancelRating()">✕</button>
+            <h3>Rate “{{ movie.title }}”</h3>
+            <input
+              type="text"
+              [(ngModel)]="ratingScore"
+              placeholder="0.0 – 10.0"
+              (keydown.enter)="submitRating()"
+              class="rating-input-field"
+            />
+            <button class="submit-rating-btn" (click)="submitRating()">
+              Submit
+            </button>
+          </div>
+        </div>
+
+        <!-- Eigenes Rating als Badge -->
+        <div class="own-rating-tag" *ngIf="userRating != null">
+          <span class="star-icon">★</span>
+          {{ userRating | number:'1.1-1' }}
+        </div>
+      </div>
+
+      <div class="details-wrapper">
+        <!-- External Ratings -->
+        <div class="ratings-wrapper">
+          <div class="rating-block">
+            <img
+              src="/assets/images/imdb-logo.png"
+              alt="IMDb"
+              class="rating-icon imdb-rating-icon"
+            />
+            <span class="rating-value">
+              {{ movie.imdbRating != null
+                  ? (movie.imdbRating | number:'1.1-1')
+                  : '–' }}
+            </span>
+          </div>
+          <div class="rating-block">
+            <img
+              src="/assets/images/rt-logo-cf.png"
+              alt="Rotten Tomatoes"
+              class="rating-icon rt-rating-icon"
+            />
+            <span class="rating-value">
+              {{ movie.rtRating != null
+                  ? (movie.rtRating + '%')
+                  : '–' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Genres -->
+        <div class="genres">
+          <span class="genre-pill" *ngFor="let g of (movie.genres || [])">
+            {{ g }}
+          </span>
+        </div>
+
+        <section class="providers" *ngIf="getKnownProviders(movie.providers).length">
+          <ng-container *ngFor="let p of getKnownProviders(movie.providers)">
+            <img
+              *ngIf="getProviderLogoPath(p) as logo"
+              [src]="logo"
+              [alt]="p"
+              class="provider-logo"
+            />
+          </ng-container>
+        </section>
+
+
+        <!-- Overview -->
+        <section class="overview">
+          <h2>Handlung</h2>
+          <p>{{ movie.overview || 'Keine Beschreibung vorhanden.' }}</p>
+        </section>
+
+        <!-- Cast -->
+        <section class="cast-section" *ngIf="(movie.cast || []).length > 0">
+          <h2>Hauptbesetzung</h2>
+          <div class="cast-list">
+            <div class="cast-item" *ngFor="let actor of (movie.cast || [])">
+              <div class="cast-image-wrapper">
+                <img
+                  [src]="actor.profilePathUrl"
+                  [alt]="actor.name"
+                />
+              </div>
+              <div class="cast-info">
+                <span class="cast-name">{{ actor.name }}</span>
+                <span class="cast-char">{{ actor.character }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #noMovie>
+  <div class="loader">Film nicht gefunden.</div>
+</ng-template>

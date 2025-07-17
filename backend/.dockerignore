@@ -1,0 +1,33 @@
+# Node dependencies
+node_modules
+
+# Build output
+/dist
+
+# Tests
+/test
+
+# Git
+.git
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Optional environment files
+.env
+.env.*
+
+# Editor directories and files
+.vscode
+.idea
+
+# OS files
+.DS_Store
+
+# Coverage
+coverage
