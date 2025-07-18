@@ -1,12 +1,18 @@
 {
   "version": 2,
-  "rewrites": [
+
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist/bingeverse" }
     }
   ],
-  "static": {
-    "public": "frontend/dist/bingeverse"
-  }
+
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
