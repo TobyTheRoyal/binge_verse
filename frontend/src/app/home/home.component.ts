@@ -103,13 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     this.watchlistService.getWatchlist().subscribe({
       next: data => this.categories[3].items = data,
-      error: err => {
-        debugError('Failed to load watchlist', err);
-        if (err.status === 401) {
-          this.authService.logout();
-          this.router.navigate(['/auth/login']);
-        }
-      }
+      error: err => debugError('Failed to load watchlist', err)
     });
   }
 

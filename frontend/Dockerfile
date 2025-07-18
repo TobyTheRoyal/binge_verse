@@ -53,7 +53,7 @@ FROM nginx:alpine
 # Entferne alle Standarddateien und Konfigurationen
 RUN rm -rf /usr/share/nginx/html/* /etc/nginx/conf.d/*
 # Kopiere Build-Dateien
-COPY --from=builder /app/dist/bingeverse/browser/* /usr/share/nginx/html/
+COPY --from=builder /app/dist/bingeverse /usr/share/nginx/html/
 # Kopiere nginx.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
