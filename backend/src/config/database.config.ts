@@ -1,14 +1,28 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 
-export const databaseConfig: TypeOrmModuleOptions = {
-  type: 'postgres',
-  host: process.env.DB_HOST || 'postgres', // Angepasst an docker-compose.yml
-  port: parseInt(process.env.DB_PORT ?? '5432', 10),
-  username: process.env.DB_USERNAME || 'streamfinder',
-  password: process.env.DB_PASSWORD || 'securepass',
-  database: process.env.DB_DATABASE || 'streamfinder',
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  // Schema synchronization is disabled by default for safety.
-  // Set TYPEORM_SYNC="true" to enable during development.
-  synchronize: process.env.TYPEORM_SYNC === 'true',
+export const databaseConfig = async (
+  configService: ConfigService,
+): Promise<TypeOrmModuleOptions> => {
+  const url = configService.get<string>('DATABASE_URL');
+  if (!url) throw new Error('DATABASE_URL fehlt in der .env!');
+
+  console.log('🔌 Connect-URL:', url);
+  console.log('🔌 PGSSLMODE=', process.env.PGSSLMODE);
+
+  return {
+    type: 'postgres',
+    url,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+    extra: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+    synchronize: configService.get<string>('TYPEORM_SYNC') === 'true',
+    autoLoadEntities: true,
+    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  };
 };
