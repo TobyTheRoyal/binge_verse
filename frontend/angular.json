@@ -15,13 +15,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-  "builder": "@angular-devkit/build-angular:application",
+  "builder": "@angular-devkit/build-angular:browser",
   "options": {
-    "outputPath": {
-      "base": "dist/bingeverse"
-    },
+    "outputPath": "dist/bingeverse",
     "index": "src/index.html",
-    "browser": "src/main.ts",
+    "main": "src/main.ts",
     "polyfills": ["zone.js"],
     "tsConfig": "tsconfig.app.json",
     "assets": ["src/favicon.ico", "src/assets"],
