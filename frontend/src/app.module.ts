@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app/app-routing.module';
 import { HomeComponent } from './app/home/home.component'; 
 import { AppComponent } from './app/app.component';
 import { RouterModule } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
 import { AuthInterceptor } from './app/core/interceptors/auth.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MoviesComponent } from './app/features/movies/movies.component';
@@ -23,7 +22,7 @@ import { CommonModule } from '@angular/common';
     ReactiveFormsModule,
   ],
   providers: [
-    provideHttpClient(),
+
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent],
