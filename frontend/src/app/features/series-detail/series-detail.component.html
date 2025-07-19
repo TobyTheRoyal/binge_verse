@@ -63,12 +63,6 @@
             </button>
           </div>
         </div>
-
-        <!-- Eigenes Rating als Badge -->
-        <div class="own-rating-tag" *ngIf="userRating != null">
-          <span class="star-icon">★</span>
-          {{ userRating | number:'1.1-1' }}
-        </div>
       </div>
 
       <div class="details-wrapper">
@@ -98,6 +92,10 @@
                   : '–' }}
             </span>
           </div>
+          <div class="own-rating-tag" *ngIf="userRating != null">
+          <span class="star-icon">★</span>
+          {{ userRating | number:'1.1-1' }}
+        </div>
         </div>
 
         <!-- Genres -->

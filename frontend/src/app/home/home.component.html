@@ -13,7 +13,11 @@
   <section class="category-section" *ngFor="let category of categories">
     <h2>{{ category.title }}</h2>
     <div class="slider-container">
-      <button class="slider-arrow left-arrow" (click)="scrollLeft(category.id)">◄</button>
+      <button class="slider-arrow left-arrow" *ngIf="canScrollLeft(category.id)" (click)="scrollLeft(category.id)">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.5 19.5L8.5 12.5L15.5 5.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <div class="scroll-container" [id]="category.id">
         <div class="content-list">
           <div class="content-card" *ngFor="let item of category.items" (click)="onCardClick(item.tmdbId)" (mouseleave)="stopRating()">
@@ -108,7 +112,15 @@
           </div>
         </div>
       </div>
-      <button class="slider-arrow right-arrow" (click)="scrollRight(category.id)">►</button>
+      <button
+        class="slider-arrow right-arrow"
+        *ngIf="category.id !== 'watchlist' || canScrollRight(category.id)"
+        (click)="scrollRight(category.id)"
+      >
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.5 4.5L15.5 11.5L8.5 18.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
   </section>
 

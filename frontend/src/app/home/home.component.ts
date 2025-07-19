@@ -23,6 +23,20 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  /** Gibt true zurück, wenn der Slider nach rechts gescrollt werden kann */
+  canScrollRight(categoryId: string): boolean {
+    const el = document.getElementById(categoryId);
+    if (!el) return false;
+    // Allow right scroll only if content is wider than container and not at the end
+    return el.scrollWidth - el.clientWidth - el.scrollLeft > 10;
+  }
+  /** Speichert für jede Kategorie, ob nach links gescrollt werden kann */
+  scrollLeftState: { [key: string]: boolean } = {};
+
+  /** Gibt true zurück, wenn der Slider nach links gescrollt werden kann */
+  canScrollLeft(categoryId: string): boolean {
+    return !!this.scrollLeftState[categoryId];
+  }
   categories = [
     { id: 'trending',   title: 'Trending Now',  items: [] as Content[] },
     { id: 'top-rated',  title: 'Top Rated',     items: [] as Content[] },
@@ -205,11 +219,30 @@ getExternalRating(item: Content, source: 'imdb' | 'rt'): number | null {
   }
 
   scrollLeft(categoryId: string): void {
-    document.getElementById(categoryId)?.scrollBy({ left: -300, behavior: 'smooth' });
+    const el = document.getElementById(categoryId);
+    if (el) {
+      el.scrollBy({ left: -300, behavior: 'smooth' });
+      setTimeout(() => this.updateScrollState(categoryId), 350);
+    }
   }
 
   scrollRight(categoryId: string): void {
-    document.getElementById(categoryId)?.scrollBy({ left: 300, behavior: 'smooth' });
+    const el = document.getElementById(categoryId);
+    if (el) {
+      el.scrollBy({ left: 300, behavior: 'smooth' });
+      setTimeout(() => this.updateScrollState(categoryId), 350);
+    }
+  }
+
+  /** Prüft nach jedem Scrollen, ob links gescrollt werden kann */
+  updateScrollState(categoryId: string): void {
+    const el = document.getElementById(categoryId);
+    this.scrollLeftState[categoryId] = !!el && el.scrollLeft > 0;
+  }
+
+  /** Initialisiere Scroll-Status nach View-Init */
+  ngAfterViewInit(): void {
+    this.categories.forEach(cat => this.updateScrollState(cat.id));
   }
 
   goToDetail(tmdbId: string) {

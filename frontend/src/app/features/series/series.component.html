@@ -1,25 +1,27 @@
 <div class="series-container">
-  <h2>Series</h2>
-  <div class="filter-actions">
-    <button
-      class="filter-toggle-btn"
-      [ngClass]="{ 'active': showFilters }"
-      (click)="toggleFilters()"
-    >
-      <svg
-        class="filter-icon"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
+  <div class="series-header-row">
+    <h2>Series</h2>
+    <div class="filter-actions">
+      <button
+        class="filter-toggle-btn"
+        [ngClass]="{ 'active': showFilters }"
+        (click)="toggleFilters()"
       >
-        <polygon points="22 3 2 3 10 12.5 10 21 14 21 14 12.5 22 3"></polygon>
-      </svg>
-      Filter
-      <span *ngIf="hasActiveFilters()" class="active-indicator"></span>
-    </button>
+        <svg
+          class="filter-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon points="22 3 2 3 10 12.5 10 21 14 21 14 12.5 22 3"></polygon>
+        </svg>
+        Filter
+        <span *ngIf="hasActiveFilters()" class="active-indicator"></span>
+      </button>
+    </div>
   </div>
 
   <app-filter-controls

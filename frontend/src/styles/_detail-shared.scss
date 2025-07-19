@@ -1,11 +1,24 @@
+
 @use 'variables';
+
+
+html, body {
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
 
 @mixin layout($prefix) {
   .#{$prefix}-detail-container {
-    width: 100%;
-    //max-width: 1200px;
+    width: 100vw;
+    max-width: none;
+    overflow-x: hidden;
     margin: 0 auto;
-    padding: variables.$spacing-xl;
+    padding: variables.$spacing-xl variables.$spacing-xl;
+    box-sizing: border-box;
     background: variables.$primary-color;
     color: variables.$text-color;
     min-height: 100vh;
@@ -170,22 +183,9 @@
     }
   }
 
-  .own-rating-tag {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(255, 0, 122, 0.9);
-    padding: 6px 12px;
-    border-radius: variables.$border-radius-sm;
-    color: variables.$text-color;
-    font-size: variables.$font-size-small;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 0 6px rgba(255, 0, 122, 0.5);
+
   }
-}
+
 
 .details-wrapper {
   flex: 1;
@@ -207,6 +207,19 @@
   padding: variables.$spacing-sm variables.$spacing-md;
   border-radius: variables.$border-radius-md;
   box-shadow: variables.$shadow-sm;
+}
+
+.own-rating-tag {
+  @extend .rating-block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  gap: variables.$spacing-xs;
+  .star-icon {
+    color: variables.$star-icon-color;
+    font-size: 1.3em;
+    margin-right: variables.$spacing-xs;
+  
+  }
 }
 
 .rating-icon {
@@ -258,6 +271,11 @@
   border-radius: variables.$border-radius-md;
   color: variables.$text-color;
   box-shadow: variables.$shadow-sm;
+  width: 100%;
+  max-width: 1320px;
+  margin-right: variables.$spacing-xl;
+  margin: 0;
+  overflow-x: hidden;
 }
 
 .cast-list {

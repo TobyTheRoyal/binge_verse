@@ -1,3 +1,4 @@
+
 @use 'variables';
 @use 'content-card';
 /* src/app/features/history/history.component.scss */
@@ -8,12 +9,20 @@
   color: variables.$text-color;
   font-family: variables.$font-family;
 }
-
+/* Header row for title and filter button */
+.series-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: variables.$spacing-xl;
+  margin-left: 0;
+  margin-right: 0;
+}
 h2 {
   font-size: variables.$font-size-heading;
   font-weight: 700;
-  margin-bottom: variables.$spacing-lg;
-  text-align: center;
+  margin: 0;
+  text-align: left;
   color: variables.$accent-color;
   text-shadow: 0 0 10px variables.$shadow-color;
 }
@@ -21,7 +30,7 @@ h2 {
 .filter-actions {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: variables.$spacing-lg;
+  margin: 0;
 }
 
 
@@ -67,7 +76,8 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: variables.$spacing-lg;
-  max-width: 1400px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
 }
 

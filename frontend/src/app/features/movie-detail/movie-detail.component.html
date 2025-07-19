@@ -63,41 +63,39 @@
             </button>
           </div>
         </div>
-
-        <!-- Eigenes Rating als Badge -->
-        <div class="own-rating-tag" *ngIf="userRating != null">
-          <span class="star-icon">★</span>
-          {{ userRating | number:'1.1-1' }}
-        </div>
       </div>
 
       <div class="details-wrapper">
         <!-- External Ratings -->
         <div class="ratings-wrapper">
-          <div class="rating-block">
-            <img
-              src="/assets/images/imdb-logo.png"
-              alt="IMDb"
-              class="rating-icon imdb-rating-icon"
-            />
-            <span class="rating-value">
-              {{ movie.imdbRating != null
-                  ? (movie.imdbRating | number:'1.1-1')
-                  : '–' }}
-            </span>
-          </div>
-          <div class="rating-block">
-            <img
-              src="/assets/images/rt-logo-cf.png"
-              alt="Rotten Tomatoes"
-              class="rating-icon rt-rating-icon"
-            />
-            <span class="rating-value">
-              {{ movie.rtRating != null
-                  ? (movie.rtRating + '%')
-                  : '–' }}
-            </span>
-          </div>
+        <div class="rating-block">
+          <img
+            src="/assets/images/imdb-logo.png"
+            alt="IMDb"
+            class="rating-icon imdb-rating-icon"
+          />
+          <span class="rating-value">
+            {{ movie.imdbRating != null
+                ? (movie.imdbRating | number:'1.1-1')
+                : '–' }}
+          </span>
+        </div>
+        <div class="rating-block">
+          <img
+            src="/assets/images/rt-logo-cf.png"
+            alt="Rotten Tomatoes"
+            class="rating-icon rt-rating-icon"
+          />
+          <span class="rating-value">
+            {{ movie.rtRating != null
+                ? (movie.rtRating + '%')
+                : '–' }}
+          </span>
+        </div>
+        <div class="own-rating-tag" *ngIf="userRating != null">
+          <span class="star-icon">★</span>
+          {{ userRating | number:'1.1-1' }}
+        </div>
         </div>
 
         <!-- Genres -->
