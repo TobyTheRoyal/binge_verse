@@ -1,9 +1,9 @@
-import { Component, OnInit, HostListener, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener} from '@angular/core';
 import { CommonModule }                     from '@angular/common';
 import { FormsModule }                      from '@angular/forms';
 import { RouterModule, Router }             from '@angular/router';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, take } from 'rxjs/operators';
+import { Observable, Subject, Subscription, fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, take, throttleTime } from 'rxjs/operators';
 
 import { ContentService }    from '../../core/services/content.service';
 import { RatingsService }    from '../../core/services/ratings.service';
@@ -35,6 +35,7 @@ export class SeriesComponent implements OnInit, OnDestroy  {
   private filterSubject = new Subject<FilterOptions>();
   private filterSub?: Subscription;
   private filterServiceSub?: Subscription;
+  private scrollSub?: Subscription;
 
   private emptyPageCount = 0;
   private readonly maxEmptyPages = 10;
@@ -62,6 +63,14 @@ export class SeriesComponent implements OnInit, OnDestroy  {
 
   ngOnInit(): void {
       this.loadPage();
+    this.scrollSub = fromEvent(window, 'scroll').pipe(
+      throttleTime(200)
+    ).subscribe(() => {
+      const threshold = 300; // px vor Ende
+      const pos = window.innerHeight + window.scrollY;
+      const height = document.body.offsetHeight;
+      if (height - pos < threshold) this.loadPage();
+    });
     this.filterSub = this.filterSubject
       .pipe(
         debounceTime(500),
@@ -107,6 +116,7 @@ export class SeriesComponent implements OnInit, OnDestroy  {
   ngOnDestroy(): void {
     this.filterSub?.unsubscribe();
     this.filterServiceSub?.unsubscribe();
+    this.scrollSub?.unsubscribe();
   }
 
   updateFilters(newFilters: Partial<FilterOptions>): void {
@@ -398,13 +408,5 @@ export class SeriesComponent implements OnInit, OnDestroy  {
     } else if (event.key === 'Enter') {
       this.submitRating(this.selectedContentId!);
     }
-  }
-
-  @HostListener('window:scroll')
-  onScroll(): void {
-    const threshold = 300; // px vor Ende
-    const pos = window.innerHeight + window.scrollY;
-    const height = document.body.offsetHeight;
-    if (height - pos < threshold) this.loadPage();
   }
 }

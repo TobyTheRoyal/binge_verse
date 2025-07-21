@@ -2,18 +2,19 @@
 import {
   Component,
   OnInit,
-  HostListener,
-  OnDestroy
+  OnDestroy,
+  HostListener
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, fromEvent } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
-  take
+  take,
+  throttleTime
 } from 'rxjs/operators';
 
 import { ContentService } from '../../core/services/content.service';
@@ -46,6 +47,7 @@ export class MoviesComponent implements OnInit, OnDestroy {
   private filterSubject = new Subject<FilterOptions>();
   private filterSub?: Subscription;
   private filterServiceSub?: Subscription;
+  private scrollSub?: Subscription;
 
   private emptyPageCount = 0;
   private readonly maxEmptyPages = 10;
@@ -74,6 +76,14 @@ export class MoviesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadPage();
+    this.scrollSub = fromEvent(window, 'scroll').pipe(
+      throttleTime(200)
+    ).subscribe(() => {
+      const threshold = 300;
+      const pos = window.innerHeight + window.scrollY;
+      const height = document.body.offsetHeight;
+      if (height - pos < threshold) this.loadPage();
+    });
     this.filterSub = this.filterSubject
   .pipe(
     debounceTime(500),
@@ -121,6 +131,7 @@ export class MoviesComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.filterSub?.unsubscribe();
     this.filterServiceSub?.unsubscribe();
+    this.scrollSub?.unsubscribe();
   }
 
   updateFilters(newFilters: Partial<FilterOptions>): void {
@@ -416,11 +427,4 @@ export class MoviesComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:scroll')
-  onScroll(): void {
-    const threshold = 300;
-    const pos = window.innerHeight + window.scrollY;
-    const height = document.body.offsetHeight;
-    if (height - pos < threshold) this.loadPage();
-  }
 }
