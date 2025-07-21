@@ -30,6 +30,7 @@ export class ContentService implements OnModuleInit {
   private cacheTrending: Content[] = [];
   private cacheTopRated: Content[] = [];
   private cacheNewReleases: Content[] = [];
+  private updatingHome = false;
   private genreMap: Map<number, string> = new Map();
 
   /** Maximum number of parallel HTTP requests when updating the cache */
@@ -52,49 +53,70 @@ export class ContentService implements OnModuleInit {
   }
 
   private async updateHomeCaches() {
-    const categories = [
-      { key: 'trending', endpoint: 'trending/movie/week', cache: this.cacheTrending },
-      { key: 'topRated', endpoint: 'movie/top_rated', cache: this.cacheTopRated },
-      { key: 'newReleases', endpoint: 'movie/now_playing', cache: this.cacheNewReleases },
-    ];
+    if (this.updatingHome) {
+      return;
+    }
+    this.updatingHome = true;
+    try {
+      const categories = [
+        { key: 'trending', endpoint: 'trending/movie/week', cache: this.cacheTrending },
+        { key: 'topRated', endpoint: 'movie/top_rated', cache: this.cacheTopRated },
+        { key: 'newReleases', endpoint: 'movie/now_playing', cache: this.cacheNewReleases },
+      ];
 
-    for (const { endpoint, cache } of categories) {
-      const data = await firstValueFrom(
-        this.httpService
-          .get(`${this.tmdbBaseUrl}/${endpoint}`, { params: { api_key: this.tmdbApiKey } })
-          .pipe(
-            map(r => r.data),
-            timeout(5000),
-            catchError(() => of({ results: [] })),
-          ),
-      );
+      try {
+        for (const { endpoint, cache } of categories) {
+          const data = await firstValueFrom(
+            this.httpService
+              .get(`${this.tmdbBaseUrl}/${endpoint}`, { params: { api_key: this.tmdbApiKey } })
+              .pipe(
+                map(r => r.data),
+                timeout(5000),
+                catchError(() => of({ results: [] })),
+              ),
+          );
 
-      cache.length = 0;
-      const results = await firstValueFrom(
-        from(data.results).pipe(
-          mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
-          toArray(),
-        ),
-      );
-      for (const c of results) {
-        if (c) {
-          cache.push(c);
+          cache.length = 0;
+          const results = await firstValueFrom(
+            from(data.results).pipe(
+              mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
+              toArray(),
+            ),
+          );
+          for (const c of results) {
+            if (c) {
+              cache.push(c);
+            }
+          }
         }
-
+      } finally {
+        this.updatingHome = false;
       }
+    } catch (error) {
+      this.logger.error('Error updating home caches:', error);
+      this.updatingHome = false;
     }
   }
 
-  getTrending(): Promise<Content[]> {
-    return Promise.resolve(this.cacheTrending);
+  async getTrending(): Promise<Content[]> {
+    if (this.cacheTrending.length === 0 && !this.updatingHome) {
+      await this.updateHomeCaches();
+    }
+    return this.cacheTrending;
   }
 
-  getTopRated(): Promise<Content[]> {
-    return Promise.resolve(this.cacheTopRated);
+  async getTopRated(): Promise<Content[]> {
+    if (this.cacheTopRated.length === 0 && !this.updatingHome) {
+      await this.updateHomeCaches();
+    }
+    return this.cacheTopRated;
   }
 
-  getNewReleases(): Promise<Content[]> {
-    return Promise.resolve(this.cacheNewReleases);
+  async getNewReleases(): Promise<Content[]> {
+    if (this.cacheNewReleases.length === 0 && !this.updatingHome) {
+      await this.updateHomeCaches();
+    }
+    return this.cacheNewReleases;
   }
 
   private async getPageWithRatings(
@@ -341,7 +363,7 @@ const detailEndpoint = `${this.tmdbBaseUrl}/${mediaType}/${item.id}`;
       return null;
     }
   }
-  
+
   searchTmdb(query: string): Observable<Content[]> {
     if (!query.trim()) {
       return new Observable<Content[]>(obs => {
