@@ -1,5 +1,6 @@
 // src/app/home/home.component.ts
 import { Component, OnInit, OnDestroy} from '@angular/core';
+import { ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +24,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  // Reference to the rating input field
+  @ViewChild('ratingInput') ratingInputRef?: any;
   /** Gibt true zurück, wenn der Slider nach rechts gescrollt werden kann */
   canScrollRight(categoryId: string): boolean {
     const el = document.getElementById(categoryId);
@@ -43,30 +46,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     { id: 'new-releases', title: 'New Releases', items: [] as Content[] },
     { id: 'watchlist',  title: 'My Watchlist',  items: [] as Content[] },
   ];
-
-  
-  
-//recommendedItem only used as placeholder for now
-  recommendedItems = [
-  {
-    title: 'The Batman',
-    backdrop: 'https://image.tmdb.org/t/p/original/74xTEgt7R36Fpooo50r9T25onhq.jpg',
-    tmdbId: '414906',
-    type: 'movie'
-  },
-  {
-    title: 'Breaking Bad',
-    backdrop: 'https://image.tmdb.org/t/p/original/eSzpy96DwBujGFj0xMbXBcGcfxX.jpg',
-    tmdbId: '1396',
-    type: 'tv'
-  },
-  {
-    title: 'Oppenheimer',
-    backdrop: 'https://image.tmdb.org/t/p/original/hUqG9YF1LOXyG5jHhzS0iFQk2XU.jpg',
-    tmdbId: '872585',
-    type: 'movie'
-  }
-];
 
   isLoggedIn$: Observable<boolean>;
   selectedContentId: string | null = null;
@@ -184,6 +163,11 @@ getExternalRating(item: Content, source: 'imdb' | 'rt'): number | null {
       this.selectedContentId = contentId;
       this.ratingScore = '';
       this.isRatingSubmitted = false;
+      setTimeout(() => {
+        if (this.ratingInputRef && this.ratingInputRef.nativeElement) {
+          this.ratingInputRef.nativeElement.focus();
+        }
+      });
     });
   }
 

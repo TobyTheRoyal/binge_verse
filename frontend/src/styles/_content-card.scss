@@ -1,7 +1,6 @@
 @use 'variables';
 
 .content-card {
-  background: linear-gradient(135deg, variables.$secondary-color, darken(variables.$secondary-color, 15%));
   border-radius: variables.$border-radius-md;
   width: 100%;
   height: 360px;
@@ -9,8 +8,9 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: variables.$shadow-md;
-  transition: variables.$transition-base;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  background: linear-gradient(120deg, #232323 60%, variables.$primary-color 100%);
+  transition: transform 0.2s, box-shadow 0.3s;
 
   &:hover {
     transform: translateY(-10px);

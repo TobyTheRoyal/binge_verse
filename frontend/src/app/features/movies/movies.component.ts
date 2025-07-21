@@ -3,7 +3,8 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  HostListener
+  HostListener,
+  ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -34,6 +35,7 @@ import { FilterControlsComponent } from '../filter-controls/filter-controls.comp
   styleUrls: ['./movies.component.scss']
 })
 export class MoviesComponent implements OnInit, OnDestroy {
+  @ViewChild('ratingInput') ratingInputRef?: any;
   movies: Content[] = [];
   selectedContentId: string | null = null;
   ratingScore: string = '';
@@ -331,6 +333,11 @@ export class MoviesComponent implements OnInit, OnDestroy {
       this.selectedContentId = tmdbId;
       this.ratingScore = '';
       this.isRatingSubmitted = false;
+      setTimeout(() => {
+        if (this.ratingInputRef && this.ratingInputRef.nativeElement) {
+          this.ratingInputRef.nativeElement.focus();
+        }
+      });
     });
   }
 

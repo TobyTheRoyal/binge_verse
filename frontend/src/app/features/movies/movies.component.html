@@ -76,6 +76,7 @@
             <button class="close-btn" (click)="stopRating()">✕</button>
             <h3>Rate "{{ item.title }}"</h3>
             <input
+              #ratingInput
               type="text"
               [(ngModel)]="ratingScore"
               placeholder="0.0 – 10.0"
