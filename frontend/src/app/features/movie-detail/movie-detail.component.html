@@ -47,6 +47,7 @@
         <div
           class="rating-input-container"
           *ngIf="selectedContentId === movie.tmdbId && !isRatingSubmitted"
+          (mouseleave)="cancelRating()"
         >
           <div class="rating-card">
             <button class="close-btn" (click)="cancelRating()">✕</button>
