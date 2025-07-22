@@ -44,7 +44,7 @@ export class ContentService implements OnModuleInit {
 
   async onModuleInit() {
     await this.getGenres();
-    this.updateHomeCaches();
+    await this.updateHomeCaches();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_2AM)
