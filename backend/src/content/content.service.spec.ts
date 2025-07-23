@@ -48,4 +48,23 @@ describe('ContentService.updateHomeCaches', () => {
     expect(list[0].imdbRating).toBeNull();
     expect(list[0].rtRating).toBeNull();
   });
+  it('returns immediately when caches are empty', async () => {
+    jest.useFakeTimers();
+    let resolved = false;
+    jest
+      .spyOn<any, any>(service, 'updateHomeCaches')
+      .mockImplementation(() => new Promise<void>(r => setTimeout(() => { resolved = true; r(); }, 100)));
+
+    const promise = service.getTrending();
+    await Promise.resolve();
+    const result = await promise;
+
+    expect(result).toEqual([]);
+    expect(resolved).toBe(false);
+
+    jest.advanceTimersByTime(100);
+    await Promise.resolve();
+    expect(resolved).toBe(true);
+    jest.useRealTimers();
+  });
 });

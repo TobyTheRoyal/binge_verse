@@ -64,57 +64,55 @@ export class ContentService implements OnModuleInit {
         { key: 'newReleases', endpoint: 'movie/now_playing', cache: this.cacheNewReleases },
       ];
 
-      try {
-        for (const { endpoint, cache } of categories) {
-          const data = await firstValueFrom(
-            this.httpService
-              .get(`${this.tmdbBaseUrl}/${endpoint}`, { params: { api_key: this.tmdbApiKey } })
-              .pipe(
-                map(r => r.data),
-                timeout(5000),
-                catchError(() => of({ results: [] })),
-              ),
-          );
-
-          cache.length = 0;
-          const results = await firstValueFrom(
-            from(data.results).pipe(
-              mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
-              toArray(),
+      for (const { endpoint, cache } of categories) {
+        const data = await firstValueFrom(
+          this.httpService
+            .get(`${this.tmdbBaseUrl}/${endpoint}`, { params: { api_key: this.tmdbApiKey } })
+            .pipe(
+              map(r => r.data),
+              timeout(5000),
+              catchError(() => of({ results: [] })),
             ),
           );
-          for (const c of results) {
-            if (c) {
-              cache.push(c);
-            }
+
+        cache.length = 0;
+        const results = await firstValueFrom(
+          from(data.results).pipe(
+            mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
+            toArray(),
+          ),
+        );
+        for (const c of results) {
+          if (c) {
+            cache.push(c);
           }
         }
-      } finally {
-        this.updatingHome = false;
+      
       }
     } catch (error) {
       this.logger.error('Error updating home caches:', error);
+      } finally {
       this.updatingHome = false;
     }
   }
 
   async getTrending(): Promise<Content[]> {
     if (this.cacheTrending.length === 0 && !this.updatingHome) {
-      await this.updateHomeCaches();
+      this.updateHomeCaches();
     }
     return this.cacheTrending;
   }
 
   async getTopRated(): Promise<Content[]> {
     if (this.cacheTopRated.length === 0 && !this.updatingHome) {
-      await this.updateHomeCaches();
+      this.updateHomeCaches();
     }
     return this.cacheTopRated;
   }
 
   async getNewReleases(): Promise<Content[]> {
     if (this.cacheNewReleases.length === 0 && !this.updatingHome) {
-      await this.updateHomeCaches();
+      this.updateHomeCaches();
     }
     return this.cacheNewReleases;
   }
