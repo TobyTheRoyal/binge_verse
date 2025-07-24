@@ -333,9 +333,10 @@ const detailEndpoint = `${this.tmdbBaseUrl}/${mediaType}/${item.id}`;
    * Fetches all additional information for a movie entry used on the home page.
    * Failures are logged and result in an item with null ratings.
    */
-  private async fetchHomeItem(item: any): Promise<Content | null> {
+  private async fetchHomeItem(item: any): Promise<Content> {
+    const content = await this.mapToEntity(item, 'movie');
     try {
-      const content = await this.mapToEntity(item, 'movie');
+      
       const details = await firstValueFrom(
         this.httpService
           .get(`${this.tmdbBaseUrl}/movie/${item.id}`, {
@@ -358,14 +359,13 @@ const detailEndpoint = `${this.tmdbBaseUrl}/${mediaType}/${item.id}`;
       content.rtRating = omdb.rtRating
         ? parseInt(omdb.rtRating.replace('%', ''), 10)
         : null;
-      this.logger.log(
-        `Cached ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`,
-      );
-      return content;
     } catch (error) {
       this.logger.error(`Failed to fetch home item for ${item.id}: ${error}`);
-      return null;
     }
+    this.logger.log(
+      `Cached ${content.title} (tmdbId: ${content.tmdbId}): IMDb=${content.imdbRating}, RT=${content.rtRating}`,
+    );
+    return content;
   }
 
   private async saveCacheToFile() {

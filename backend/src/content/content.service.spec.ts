@@ -16,6 +16,11 @@ describe('ContentService.updateHomeCaches', () => {
     service = new ContentService(repo, httpService as unknown as HttpService);
     (service as any).tmdbApiKey = 'k';
     (service as any).omdbApiKey = 'k';
+    jest
+      .spyOn<any, any>(service, 'fetchWatchProviders')
+      .mockResolvedValue([]);
+    jest.spyOn((service as any).logger, 'log').mockImplementation(() => {});
+    jest.spyOn((service as any).logger, 'error').mockImplementation(() => {});
   });
 
   it('caches items even when detail requests fail', async () => {
