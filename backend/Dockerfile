@@ -28,6 +28,7 @@ WORKDIR /app
 # Kopiere nur die notwendigen Dateien aus dem Builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/homeCache.json ./
 
 # Installiere nur Produktionsabhängigkeiten
 RUN npm install --production
