@@ -88,6 +88,27 @@
   }
 }
 
+.loading-placeholder {
+  display: flex;
+  gap: 32px;
+  padding: 16px 0;
+
+  .skeleton-card {
+    flex: 0 0 auto;
+    width: 220px;
+    aspect-ratio: 5 / 9;
+    border-radius: 18px;
+    background: lighten(variables.$primary-color, 5%);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
 @keyframes fadeInHero {
   from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: none; }

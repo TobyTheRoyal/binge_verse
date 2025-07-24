@@ -15,6 +15,12 @@ import { Content } from '../interfaces/content.interface';
 import { debugError } from '../core/utils/logger';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
+interface Category {
+  id: string;
+  title: string;
+  items: Content[];
+  isLoading: boolean;
+}
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -40,12 +46,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   canScrollLeft(categoryId: string): boolean {
     return !!this.scrollLeftState[categoryId];
   }
-  categories = [
-    { id: 'trending',   title: 'Trending Now',  items: [] as Content[] },
-    { id: 'top-rated',  title: 'Top Rated',     items: [] as Content[] },
-    { id: 'new-releases', title: 'New Releases', items: [] as Content[] },
-    { id: 'watchlist',  title: 'My Watchlist',  items: [] as Content[] },
+  categories: Category[] = [
+    { id: 'trending',    title: 'Trending Now',  items: [], isLoading: false },
+    { id: 'top-rated',   title: 'Top Rated',     items: [], isLoading: false },
+    { id: 'new-releases',title: 'New Releases',  items: [], isLoading: false },
+    { id: 'watchlist',   title: 'My Watchlist',  items: [], isLoading: false },
   ];
+
+  placeholderItems = Array.from({ length: 5 });
+
+  private setLoading(index: number, value: boolean): void {
+    if (this.categories[index]) {
+      this.categories[index].isLoading = value;
+    }
+  }
 
   isLoggedIn$: Observable<boolean>;
   selectedContentId: string | null = null;
@@ -82,36 +96,71 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private loadCategories(): void {
+    this.setLoading(0, true);
     this.contentService.getTrending().subscribe({
-      next: data => this.categories[0].items = data,
-      error: err => debugError('Failed to load trending', err),
+      next: data => {
+        this.categories[0].items = data;
+        this.setLoading(0, false);
+        setTimeout(() => this.updateScrollState(this.categories[0].id));
+      },
+      error: err => { debugError('Failed to load trending', err); this.setLoading(0, false); },
     });
+    this.setLoading(1, true);
     this.contentService.getTopRated().subscribe({
-      next: data => this.categories[1].items = data,
-      error: err => debugError('Failed to load top rated', err),
+      next: data => {
+        this.categories[1].items = data;
+        this.setLoading(1, false);
+        setTimeout(() => this.updateScrollState(this.categories[1].id));
+      },
+      error: err => { debugError('Failed to load top rated', err); this.setLoading(1, false); },
     });
+    this.setLoading(2, true);
     this.contentService.getNewReleases().subscribe({
-      next: data => this.categories[2].items = data,
-      error: err => debugError('Failed to load new releases', err),
+      next: data => {
+        this.categories[2].items = data;
+        this.setLoading(2, false);
+        setTimeout(() => this.updateScrollState(this.categories[2].id));
+      },
+      error: err => { debugError('Failed to load new releases', err); this.setLoading(2, false); },
     });
+    this.setLoading(3, true);
     this.watchlistService.getWatchlist().subscribe({
-      next: data => this.categories[3].items = data,
-      error: err => debugError('Failed to load watchlist', err)
+      next: data => {
+        this.categories[3].items = data;
+        this.setLoading(3, false);
+        setTimeout(() => this.updateScrollState(this.categories[3].id));
+      },
+      error: err => { debugError('Failed to load watchlist', err); this.setLoading(3, false); },
     });
   }
 
   private loadPublicCategories(): void {
+    this.setLoading(0, true);
     this.contentService.getTrending().subscribe({
-      next: data => this.categories[0].items = data,
-      error: err => debugError('Failed to load trending', err),
+      next: data => {
+        this.categories[0].items = data;
+        this.setLoading(0, false);
+        setTimeout(() => this.updateScrollState(this.categories[0].id));
+      },
+      error: err => { debugError('Failed to load trending', err); this.setLoading(0, false); },
     });
+    this.setLoading(1, true);
     this.contentService.getTopRated().subscribe({
-      next: data => this.categories[1].items = data,
-      error: err => debugError('Failed to load top rated', err),
+      next: data => {
+        this.categories[1].items = data;
+        this.setLoading(1, false);
+        setTimeout(() => this.updateScrollState(this.categories[1].id));
+      },
+      error: err => { debugError('Failed to load top rated', err); this.setLoading(1, false); },
     });
+    this.setLoading(2, true);
     this.contentService.getNewReleases().subscribe({
-      next: data => this.categories[2].items = data,
-      error: err => debugError('Failed to load new releases', err),
+      next: data => {
+        this.categories[2].items = data;
+        this.setLoading(2, false);
+        setTimeout(() => this.updateScrollState(this.categories[2].id));
+      },
+      error: err => { debugError('Failed to load new releases', err); this.setLoading(2, false); },
     });
   }
 

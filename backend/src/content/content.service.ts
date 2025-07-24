@@ -8,6 +8,8 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, Observable, of, from } from 'rxjs';
 import { map, timeout, catchError, mergeMap, toArray} from 'rxjs/operators';
 import { CastMember } from '../cast-member/cast-member.entity';
+import { readFile, writeFile } from 'fs/promises';
+import * as path from 'path';
 
 export interface FilterOptions {
   genre: string;
@@ -26,6 +28,7 @@ export class ContentService implements OnModuleInit {
   private readonly omdbBaseUrl = 'https://www.omdbapi.com/';
 
   private readonly logger = new Logger(ContentService.name);
+  private readonly cacheFilePath = path.join(process.cwd(), 'homeCache.json');
 
   private cacheTrending: Content[] = [];
   private cacheTopRated: Content[] = [];
@@ -44,6 +47,7 @@ export class ContentService implements OnModuleInit {
 
   async onModuleInit() {
     await this.getGenres();
+    await this.loadCacheFromFile();
     await this.updateHomeCaches();
   }
 
@@ -64,35 +68,37 @@ export class ContentService implements OnModuleInit {
         { key: 'newReleases', endpoint: 'movie/now_playing', cache: this.cacheNewReleases },
       ];
 
-      for (const { endpoint, cache } of categories) {
-        const data = await firstValueFrom(
-          this.httpService
-            .get(`${this.tmdbBaseUrl}/${endpoint}`, { params: { api_key: this.tmdbApiKey } })
-            .pipe(
-              map(r => r.data),
-              timeout(5000),
-              catchError(() => of({ results: [] })),
-            ),
+      await Promise.all(
+        categories.map(async ({ endpoint, cache }) => {
+          const data = await firstValueFrom(
+            this.httpService
+              .get(`${this.tmdbBaseUrl}/${endpoint}`, { params: { api_key: this.tmdbApiKey } })
+              .pipe(
+                map(r => r.data),
+                timeout(5000),
+                catchError(() => of({ results: [] })),
+              ),
           );
 
         cache.length = 0;
-        const results = await firstValueFrom(
-          from(data.results).pipe(
-            mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
-            toArray(),
-          ),
-        );
-        for (const c of results) {
-          if (c) {
-            cache.push(c);
+          const results = await firstValueFrom(
+            from(data.results).pipe(
+              mergeMap(item => from(this.fetchHomeItem(item)), this.concurrencyLimit),
+              toArray(),
+            ),
+          );
+          for (const c of results) {
+            if (c) {
+              cache.push(c);
+            }
           }
-        }
-      
-      }
+         }),
+      );
     } catch (error) {
       this.logger.error('Error updating home caches:', error);
       } finally {
       this.updatingHome = false;
+      await this.saveCacheToFile();
     }
   }
 
@@ -359,6 +365,35 @@ const detailEndpoint = `${this.tmdbBaseUrl}/${mediaType}/${item.id}`;
     } catch (error) {
       this.logger.error(`Failed to fetch home item for ${item.id}: ${error}`);
       return null;
+    }
+  }
+
+  private async saveCacheToFile() {
+    try {
+      const data = {
+        trending: this.cacheTrending,
+        topRated: this.cacheTopRated,
+        newReleases: this.cacheNewReleases,
+      };
+      await writeFile(this.cacheFilePath, JSON.stringify(data), 'utf-8');
+      this.logger.log(`Saved cache to ${this.cacheFilePath}`);
+    } catch (error: any) {
+      this.logger.error(`Failed to save cache file: ${error}`);
+    }
+  }
+
+  private async loadCacheFromFile() {
+    try {
+      const raw = await readFile(this.cacheFilePath, 'utf-8');
+      const data = JSON.parse(raw);
+      this.cacheTrending = data.trending || [];
+      this.cacheTopRated = data.topRated || [];
+      this.cacheNewReleases = data.newReleases || [];
+      this.logger.log(`Loaded cache from ${this.cacheFilePath}`);
+    } catch (error: any) {
+      if (error.code !== 'ENOENT') {
+        this.logger.error(`Failed to load cache file: ${error}`);
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 import { ContentService } from './content.service';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { Repository } from 'typeorm';
 import { Content } from './entities/content.entity';
 import { CastMember } from '../cast-member/cast-member.entity';
@@ -65,6 +66,55 @@ describe('ContentService.updateHomeCaches', () => {
     jest.advanceTimersByTime(100);
     await Promise.resolve();
     expect(resolved).toBe(true);
+    jest.useRealTimers();
+  });
+  it('populates all caches when categories run in parallel', async () => {
+    jest.useFakeTimers();
+
+    jest.spyOn(service as any, 'fetchOmdbData').mockResolvedValue({
+      imdbRating: '1.0',
+      rtRating: '50%'
+    });
+
+    httpService.get.mockImplementation(url => {
+      if (url.includes('trending/movie/week')) {
+        return of({
+          data: { results: [{ id: 1, title: 'A', release_date: '2020-01-01', poster_path: '', genre_ids: [], overview: '', original_language: 'en' }] }
+        }).pipe(delay(100));
+      }
+      if (url.includes('movie/top_rated')) {
+        return of({
+          data: { results: [{ id: 2, title: 'B', release_date: '2020-01-02', poster_path: '', genre_ids: [], overview: '', original_language: 'en' }] }
+        }).pipe(delay(200));
+      }
+      if (url.includes('movie/now_playing')) {
+        return of({
+          data: { results: [{ id: 3, title: 'C', release_date: '2020-01-03', poster_path: '', genre_ids: [], overview: '', original_language: 'en' }] }
+        }).pipe(delay(300));
+      }
+      if (url.match(/\/movie\/(\d+)/)) {
+        return of({ data: { imdb_id: 'tt' + url.match(/\/movie\/(\d+)/)![1] } });
+      }
+      return of({ data: {} });
+    });
+
+    let resolved = false;
+    const promise = (service as any).updateHomeCaches().then(() => {
+      resolved = true;
+    });
+
+    jest.advanceTimersByTime(100);
+    await Promise.resolve();
+    expect(resolved).toBe(false);
+
+    jest.advanceTimersByTime(200);
+    await promise;
+
+    expect(resolved).toBe(true);
+    expect((service as any).cacheTrending.length).toBe(1);
+    expect((service as any).cacheTopRated.length).toBe(1);
+    expect((service as any).cacheNewReleases.length).toBe(1);
+
     jest.useRealTimers();
   });
 });
